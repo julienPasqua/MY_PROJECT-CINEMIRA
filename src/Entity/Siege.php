@@ -1,0 +1,105 @@
+<?php
+
+namespace App\Entity;
+
+use App\Enum\TypeSiege;
+use App\Repository\SiegeRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: SiegeRepository::class)]
+class Siege
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 5)]
+    private ?string $numero_rangee = null;
+
+    #[ORM\Column]
+    private ?int $numero_place = null;
+
+    #[ORM\Column(type: Types::STRING, enumType: TypeSiege::class)]
+    private ?TypeSiege $type = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
+    private ?string $prix_supplement = null;
+
+    #[ORM\ManyToOne(inversedBy: 'sieges')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Salle $Salle = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getNumeroRangee(): ?string
+    {
+        return $this->numero_rangee;
+    }
+
+    public function setNumeroRangee(string $numero_rangee): static
+    {
+        $this->numero_rangee = $numero_rangee;
+
+        return $this;
+    }
+
+    public function getNumeroPlace(): ?int
+    {
+        return $this->numero_place;
+    }
+
+    public function setNumeroPlace(int $numero_place): static
+    {
+        $this->numero_place = $numero_place;
+
+        return $this;
+    }
+
+    public function getType(): ?TypeSiege
+    {
+        return $this->type;
+    }
+
+    public function setType(TypeSiege $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getPrixSupplement(): ?string
+    {
+        return $this->prix_supplement;
+    }
+
+    public function setPrixSupplement(?string $prix_supplement): static
+    {
+        $this->prix_supplement = $prix_supplement;
+
+        return $this;
+    }
+
+    public function getSalle(): ?Salle
+    {
+        return $this->Salle;
+    }
+
+    public function setSalle(?Salle $Salle): static
+    {
+        $this->Salle = $Salle;
+
+        return $this;
+    }
+}

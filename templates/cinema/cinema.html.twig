@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}🎬 Ajouter un cinéma{% endblock %}
+
+{% block body %}
+<div class="container mt-5 mb-5">
+    <h1 class="mb-4 text-center">🎥 Ajouter / Modifier un cinéma</h1>
+
+    <div class="card shadow p-4">
+        {{ form_start(form) }}
+
+        <div class="mb-3">
+            {{ form_label(form.nom, 'Nom du cinéma', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Cinéma du Centre'}}) }}
+            {{ form_errors(form.nom) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.adresse, 'Adresse', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+            {{ form_widget(form.adresse, {'attr': {'class': 'form-control', 'placeholder': 'Adresse complète'}}) }}
+            {{ form_errors(form.adresse) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.ville, 'Ville', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+            {{ form_widget(form.ville, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Ajaccio'}}) }}
+            {{ form_errors(form.ville) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.code_postal, 'Code postal', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+            {{ form_widget(form.code_postal, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 20000'}}) }}
+            {{ form_errors(form.code_postal) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.telephone, 'Téléphone', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+            {{ form_widget(form.telephone, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 04 95 12 34 56'}}) }}
+            {{ form_errors(form.telephone) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.email, 'Email', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+            {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'contact@cinema.fr'}}) }}
+            {{ form_errors(form.email) }}
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">💾 Enregistrer</button>
+            <a href="{{ path('home.index') }}" class="btn btn-secondary btn-lg ms-2">⬅ Retour</a>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
+

@@ -18,3 +18,19 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###> composer ###
+/composer.lock
+/vendor/
+###< composer ###
+
+###> IDE & OS ###
+# VSCode
+.vscode/
+# PhpStorm
+.idea/
+# macOS
+.DS_Store
+# Windows
+Thumbs.db
+###< IDE & OS ###

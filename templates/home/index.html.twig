@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ name }}🎬CineMira{% endblock %}
+
+{% set show_Search_Bar = false %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4">Welcome to CineMira {{ name }}!</h1>
+    <p class="lead">Le site qui va changé la façon dont vous découvrez les films.</p>
+    <!--<a href="#" class="btn btn-primary btn-lg mt-3">Explore Movies</a>-->
+</div>
+
+        <!-- Colonne droite : film du mois -->
+        {% if filmDuMois %}
+        <div class="col-md-6 text-center">
+            <aside class="film-du-mois">
+                <span class="film-du-mois-badge d-block mb-2">⭐ FILM N°1 DU MOIS</span>
+                <h2>Le Plus Populaire</h2>
+                
+
+                <img src="https://image.tmdb.org/t/p/w500{{ filmDuMois.poster_path }}" 
+                     alt="{{ filmDuMois.title }}" 
+                     class="film-du-mois-poster img-fluid rounded shadow">
+                <div class="film-du-mois-info mt-3">
+                    <h3>{{ filmDuMois.title }}</h3>
+                    <p><strong>Date de sortie :</strong> {{ filmDuMois.release_date|date('d/m/Y') }}</p>
+                    <p><strong>Langue :</strong> {{ filmDuMois.original_language|upper }}</p>
+                </div>
+            </aside>
+        </div>
+
+        {% endif %}
+    </main>
+{% endblock %}
+    
