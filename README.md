@@ -23,13 +23,13 @@ Application Symfony de **gestion de cinéma**, permettant de gérer :
 
 Le projet repose sur **Symfony 6.4**, **Doctrine ORM**, **Twig** et **MySQL**.
 
------------------------------------------------
+---
 
-## ⚙️ Installation ##
+## ⚙️ Installation
 
 ```bash
 # 1️⃣ Cloner le dépôt
-git clone https://github.com/<ton-nom-utilisateur>/<ton-projet>.git
+git clone https://github.com/julienPasqua/MY_PROJECT-CINEMIRA.git
 
 # 2️⃣ Aller dans le dossier
 cd <MY_PROJECT>
@@ -161,4 +161,3 @@ Nom : Pasqua julien
 -   **Email :** [julienpasqua2a@gmail.com](mailto:julienpasqua2a@gmail.com)
 -   **Git :** [Github](https://github.com/julienPasqua)
 -   **LinkedIn :** [linkedIn](https://www.linkedin.com/in/julien-pasqua-3a89b478/)
-                      
