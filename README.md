@@ -72,8 +72,7 @@ Julien Pasqua
 Étudiant en conception web & développement logiciel
 🎓 MIRA – Objectif Bac+3 en Intelligence Artificielle
 
-📫 Contact : LinkedIn :
-(https://www.linkedin.com/in/julien-pasqua-3a89b478/)
+
 
 
 -----------------------------------------------
@@ -153,7 +152,7 @@ Vous pouvez l’utiliser, le modifier et le redistribuer librement.
 
 ---
 
-📞 Contactez-moi
+📫 Contact :
 
 Pour toute question :
 
@@ -161,3 +160,5 @@ Nom : Pasqua julien
 
 -   **Email :** [julienpasqua2a@gmail.com](mailto:julienpasqua2a@gmail.com)
 -   **Git :** [Github](https://github.com/julienPasqua)
+-   **LinkedIn :** [linkedIn](https://www.linkedin.com/in/julien-pasqua-3a89b478/)
+                      
