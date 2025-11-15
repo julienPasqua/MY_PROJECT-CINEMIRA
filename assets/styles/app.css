@@ -12,20 +12,39 @@ body {
 
 /* ======== Footer ======== */
 footer {
-    background-color: #343a40;
+    background-color: #006ed4;
     color: #fff;
     text-align: center;
     padding: 5px 0;
     margin-top: 200%;
 }
 
-.container p-4 {
+/* Couleur au survol pour Facebook */
+.social-link:hover .fa-facebook-f {
+    color: #1877f2 !important;
+}
+
+/* Couleur au survol pour Instagram */
+.social-link:hover .fa-instagram {
+    color: #e4405f !important;
+}
+
+/* Couleur au survol pour LinkedIn */
+.social-link:hover .fa-linkedin-in {
+    color: #0a66c2 !important;
+}
+
+.social-link:hover i {
+    color:yellow;
+}
+
+/* ======== Container ======== */
+
+.container.p-4 {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
-
-
 
 /* ======== Animation Titre ======== */
 
@@ -47,7 +66,6 @@ h1 {
 .d-flex {
     display: flex !important;
     margin-right: 20px;
-    
 }
 
 /* .btn-warning {
