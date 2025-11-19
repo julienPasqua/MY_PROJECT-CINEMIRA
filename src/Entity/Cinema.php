@@ -33,11 +33,17 @@ class Cinema
     #[ORM\Column(length: 200, nullable: true)]
     private ?string $email = null;
 
-    /**
+        /**
      * @var Collection<int, Salle>
      */
-    #[ORM\OneToMany(targetEntity: Salle::class, mappedBy: 'cinema')]
+    #[ORM\OneToMany(
+        mappedBy: 'cinema',
+        targetEntity: Salle::class,
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     private Collection $salles;
+
 
     public function __construct()
     {

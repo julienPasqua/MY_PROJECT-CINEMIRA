@@ -1,0 +1,286 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un cinéma{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .form-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+
+    .header-section {
+        margin-bottom: 2rem;
+    }
+
+    .btn-back {
+        background: linear-gradient(135deg, #764ba2, #667eea);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-back:hover {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-card h1 {
+        color: #764ba2;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .form-card .subtitle {
+        color: #666;
+        margin-bottom: 2.5rem;
+        font-size: 1.1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.75rem;
+    }
+
+    .form-group label {
+        color: #2c2c2c;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: #999;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .btn-create {
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        color: #000;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .btn-create:hover {
+        background: linear-gradient(135deg, #ffed4e, #ffd700);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+    }
+
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-cancel:hover {
+        background: #5a6268;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2.5rem;
+    }
+
+    .alert-custom {
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border: none;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .form-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn-create,
+        .btn-cancel {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="form-container">
+    {# Header Section #}
+    <div class="header-section">
+        <a href="{{ path('app_admin_dashboard') }}" class="btn-back">
+            ← Retour au Dashboard
+        </a>
+    </div>
+
+    {# Form Card #}
+    <div class="form-card">
+        <h1>🎬 Ajouter un nouveau cinéma</h1>
+        <p class="subtitle">Remplissez les informations du cinema</p>
+
+        {# Messages Flash #}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} alert-custom">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {# Formulaire #}
+        {{ form_start(form) }}
+
+        <div class="form-group">
+            {{ form_label(form.nom, 'Nom du cinéma') }}
+            {{ form_widget(form.nom, {
+                'attr': {
+                    'class': 'form-control',
+                    'placeholder': 'Ex: Cinéma du Centre'
+                }
+            }) }}
+            {{ form_errors(form.nom) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.adresse, 'Adresse') }}
+            {{ form_widget(form.adresse, {
+                'attr': {
+                    'class': 'form-control',
+                    'placeholder': 'Ex: 123 Rue Principale'
+                }
+            }) }}
+            {{ form_errors(form.adresse) }}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                {{ form_label(form.ville, 'Ville') }}
+                {{ form_widget(form.ville, {
+                    'attr': {
+                        'class': 'form-control',
+                        'placeholder': 'Ex: Ajaccio'
+                    }
+                }) }}
+                {{ form_errors(form.ville) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.code_postal, 'Code Postal') }}
+                {{ form_widget(form.code_postal, {
+                    'attr': {
+                        'class': 'form-control',
+                        'placeholder': 'Ex: 20000'
+                    }
+                }) }}
+                {{ form_errors(form.code_postal) }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.telephone, 'Téléphone') }}
+            {{ form_widget(form.telephone, {
+                'attr': {
+                    'class': 'form-control',
+                    'placeholder': 'Ex: 04 95 12 34 56'
+                }
+            }) }}
+            {{ form_errors(form.telephone) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.email, 'Email') }}
+            {{ form_widget(form.email, {
+                'attr': {
+                    'class': 'form-control',
+                    'placeholder': 'Ex: contact@cinema.fr'
+                }
+            }) }}
+            {{ form_errors(form.email) }}
+        </div>
+
+        {{ form_rest(form) }}
+
+        <div class="button-group">
+            <button type="submit" class="btn-create">
+                🎥 Créer le cinema
+            </button>
+            <a href="{{ path('app_admin_dashboard') }}" class="btn-cancel">
+                ← Annuler
+            </a>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

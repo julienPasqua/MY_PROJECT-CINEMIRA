@@ -15,34 +15,49 @@ class TmdbService
         $this->apiKey = $tmdbApiKey;
     }
 
-    public function getPopularMovies(): array
+    private function request(string $endpoint, array $params = []): array
     {
-        $response = $this->client->request('GET', 'https://api.themoviedb.org/3/movie/popular', [
-            'query' => [
-                'api_key' => $this->apiKey,
-                'language' => 'fr-FR',
-                'page' => 1,
-            ],
+        $params['api_key'] = $this->apiKey;
+        $params['language'] = 'fr-FR';
+
+        $response = $this->client->request('GET', 'https://api.themoviedb.org/3' . $endpoint, [
+            'query' => $params,
         ]);
 
-        return $response->toArray()['results'] ?? [];
+        return $response->toArray();
     }
 
-
-
-    public function searchMovies(string $query): array
+    /** ⭐ Films populaires */
+    public function getPopularMovies(): array
     {
-        $url = 'https://api.themoviedb.org/3/search/movie';
-        $response = $this->client->request('GET', $url, [
-            'query' => [
-                'api_key' => $this->apiKey,
-                'language' => 'fr-FR',
-                'query' => $query,
-                'page' => 1,
-                'include_adult' => false,
-            ],
+        $data = $this->request('/movie/popular', [
+            'page' => 1
         ]);
 
-        return $response->toArray()['results'] ?? [];
+        return $data['results'] ?? [];
+    }
+
+    /** 🔍 Recherche */
+    public function searchMovies(string $query): array
+    {
+        $data = $this->request('/search/movie', [
+            'query' => $query,
+            'page' => 1,
+            'include_adult' => false,
+        ]);
+
+        return $data['results'] ?? [];
+    }
+
+    /** 🎬 Récupérer un film précis */
+    public function getMovie(int $tmdbId): ?array
+    {
+        return $this->request('/movie/' . $tmdbId);
+    }
+
+    /** 🎬 FilmController appelle cette méthode → on l'ajoute */
+    public function getMovieDetails(int $tmdbId): ?array
+    {
+        return $this->getMovie($tmdbId);
     }
 }

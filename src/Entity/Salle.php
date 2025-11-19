@@ -15,11 +15,17 @@ class Salle
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
+    // Numéro de la salle (1, 2, 3 …)
+    #[ORM\Column(type: 'integer')]
+    private ?int $numero_salle = null;
+
+    // Nom de la salle (IMAX, Premium, Enfants…)
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $nom = null;
 
-    #[ORM\Column]
-    private int $nombre_places;
+    // Équipements spéciaux (Dolby Atmos, 3D…)
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $equipement = null;
 
     #[ORM\ManyToOne(inversedBy: 'salles')]
     #[ORM\JoinColumn(nullable: false)]
@@ -34,7 +40,7 @@ class Salle
     /**
      * @var Collection<int, Siege>
      */
-    #[ORM\OneToMany(targetEntity: Siege::class, mappedBy: 'Salle', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Siege::class, mappedBy: 'salle', orphanRemoval: true)]
     private Collection $sieges;
 
     public function __construct()
@@ -48,10 +54,14 @@ class Salle
         return $this->id;
     }
 
-    public function setId(int $id): static
+    public function getNumeroSalle(): ?int
     {
-        $this->id = $id;
+        return $this->numero_salle;
+    }
 
+    public function setNumeroSalle(int $numero_salle): static
+    {
+        $this->numero_salle = $numero_salle;
         return $this;
     }
 
@@ -60,22 +70,20 @@ class Salle
         return $this->nom;
     }
 
-    public function setNom(string $nom): static
+    public function setNom(?string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
-    public function getNombrePlaces(): ?int
+    public function getEquipement(): ?string
     {
-        return $this->nombre_places;
+        return $this->equipement;
     }
 
-    public function setNombrePlaces(int $nombre_places): static
+    public function setEquipement(?string $equipement): static
     {
-        $this->nombre_places = $nombre_places;
-
+        $this->equipement = $equipement;
         return $this;
     }
 
@@ -87,7 +95,6 @@ class Salle
     public function setCinema(?Cinema $cinema): static
     {
         $this->cinema = $cinema;
-
         return $this;
     }
 
@@ -105,19 +112,16 @@ class Salle
             $this->seances->add($seance);
             $seance->setSalle($this);
         }
-
         return $this;
     }
 
     public function removeSeance(Seance $seance): static
     {
         if ($this->seances->removeElement($seance)) {
-            // set the owning side to null (unless already changed)
             if ($seance->getSalle() === $this) {
                 $seance->setSalle(null);
             }
         }
-
         return $this;
     }
 
@@ -135,19 +139,22 @@ class Salle
             $this->sieges->add($siege);
             $siege->setSalle($this);
         }
-
         return $this;
     }
 
     public function removeSiege(Siege $siege): static
     {
         if ($this->sieges->removeElement($siege)) {
-            // set the owning side to null (unless already changed)
             if ($siege->getSalle() === $this) {
                 $siege->setSalle(null);
             }
         }
-
         return $this;
+    }
+
+    // Capacité calculée automatiquement via les sièges
+    public function getCapacite(): int
+    {
+        return $this->sieges->count();
     }
 }

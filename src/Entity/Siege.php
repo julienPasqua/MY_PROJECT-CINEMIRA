@@ -27,9 +27,9 @@ class Siege
     #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
     private ?string $prix_supplement = null;
 
-    #[ORM\ManyToOne(inversedBy: 'sieges')]
+    #[ORM\ManyToOne(targetEntity: Salle::class,inversedBy: 'sieges')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Salle $Salle = null;
+    private ?Salle $salle = null;
 
     public function getId(): ?int
     {
@@ -93,12 +93,12 @@ class Siege
 
     public function getSalle(): ?Salle
     {
-        return $this->Salle;
+        return $this->salle;
     }
 
-    public function setSalle(?Salle $Salle): static
+    public function setSalle(?Salle $salle): static
     {
-        $this->Salle = $Salle;
+        $this->salle = $salle;
 
         return $this;
     }

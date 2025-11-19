@@ -1,49 +1,76 @@
 {# templates/components/LayoutNavbar.html.twig #}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-lg">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{{ path('home.index') }}">{{ brandName }}</a>
-        
+
+        {# 🔹 NOM DU SITE #}
+        <a class="navbar-brand fw-bold text-warning" href="{{ path('home.index') }}">
+            {{ brandName }}
+        </a>
+
+        {# 🔹 Bouton mobile #}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        
+
+        {# 🔹 Menu principal #}
         <div class="collapse navbar-collapse" id="navbarNav">
+
             <ul class="navbar-nav me-auto">
                 {% for item in items %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path(item.route) }}">{{ item.label }}</a>
+                        <a class="nav-link {% if app.current_route == item.route %}active text-warning{% endif %}"
+                           href="{{ path(item.route) }}">
+                            {{ item.label }}
+                        </a>
                     </li>
                 {% endfor %}
             </ul>
+
+            {# 🔹 Barre de recherche (sauf page accueil) #}
+            {% if showSearchBar is not defined or showSearchBar == true %}
+                <form class="d-flex me-3" role="search" id="searchForm">
+                    <input
+                        class="form-control bg-secondary text-white border-warning"
+                        type="search"
+                        placeholder="Rechercher un film..."
+                        aria-label="Search"
+                        id="searchInput"
+                    />
+                </form>
+            {% endif %}
+
+            {# 🔹 Authentification #}
+            <div class="d-flex align-items-center gap-2">
+
+                {% if app.user %}
+                    {# Utilisateur connecté #}
+                    <a href="{{ path('app_profile') }}" class="btn btn-outline-warning btn-sm">
+                        Mon compte
+                    </a>
+
+                    <a href="{{ path('app_logout') }}" class="btn btn-warning btn-sm text-dark fw-bold">
+                        Déconnexion
+                    </a>
+
+                {% else %}
+                    {# Utilisateur non connecté #}
+                    <a href="{{ path('app_login') }}" class="btn btn-outline-warning btn-sm">
+                        Connexion
+                    </a>
+
+                    <a href="{{ path('app_register') }}" class="btn btn-warning btn-sm text-dark fw-bold">
+                        Inscription
+                    </a>
+                {% endif %}
+
+            </div>
         </div>
-
-                    {# 🎬 BOUTON DE RÉSERVATION #}
-            <a href="{{ path('app_reservation') }}" class="btn btn-warning d-flex align-items-center gap-2 me-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M3.5 2A1.5 1.5 0 0 0 2 3.5v9A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 12.5 2h-9zm0 1h9a.5.5 0 0 1 .5.5V5H3V3.5a.5.5 0 0 1 .5-.5zM3 6h10v6.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V6z"/>
-                    <path d="M5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
-                </svg>
-                <span class="d-none d-lg-inline">Réservez votre film</span>
-                <span class="d-lg-none">Réserver</span>
-            </a>
-              {# 🔍 BARRE DE RECHERCHE #}
-        {% if showSearchBar is not defined or showSearchBar == true %}
-
-        <form class="d-flex ms-auto" role="search" id="searchForm">
-            <input
-                class="form-control me-2"
-                type="search" 
-                placeholder="Rechercher votre film..." 
-                aria-label="Search"
-                id="searchInput"
-            />
-        </form>
-        
-        {% endif %}
     </div>
 </nav>
 
-{# Zone des résultats #}
+
+{# Zone d'affichage des résultats de recherche #}
 <div class="container mt-2">
     <div id="searchResults"></div>
 </div>

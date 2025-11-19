@@ -5,11 +5,14 @@ namespace App\Entity;
 use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
-class Utilisateur
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,14 +25,16 @@ class Utilisateur
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
+    // mot de passe hashé
     #[ORM\Column(length: 255)]
-    private ?string $mots_de_passe = null;
+    private ?string $password = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $roles = null;
+    // OBLIGATOIRE : ARRAY JSON pour Symfony
+    #[ORM\Column(type: 'json')]
+    private array $roles = [];
 
     #[ORM\Column]
-    private ?\DateTime $date_inscription = null;
+    private ?\DateTimeImmutable $date_inscription = null;
 
     /**
      * @var Collection<int, Reservation>
@@ -47,18 +52,13 @@ class Utilisateur
     {
         $this->reservations = new ArrayCollection();
         $this->avis = new ArrayCollection();
+        $this->date_inscription = new \DateTimeImmutable(); // auto set
+        $this->roles = ['ROLE_USER']; // rôle par défaut
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getNom(): ?string
@@ -69,9 +69,9 @@ class Utilisateur
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
+
 
     public function getEmail(): ?string
     {
@@ -81,49 +81,70 @@ class Utilisateur
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
-    public function getMotsDePasse(): ?string
+    // alias pour Symfony
+    public function getUserIdentifier(): string
     {
-        return $this->mots_de_passe;
+        return $this->email;
     }
 
-    public function setMotsDePasse(string $mots_de_passe): static
-    {
-        $this->mots_de_passe = $mots_de_passe;
+    /** PASSWORD **/
 
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
         return $this;
     }
 
-    public function getRoles(): ?string
+    /** ROLES **/
+
+    public function getRoles(): array
     {
-        return $this->roles;
+        $roles = $this->roles;
+
+        // garantit au minimum ROLE_USER
+        if (!in_array('ROLE_USER', $roles)) {
+            $roles[] = 'ROLE_USER';
+        }
+
+        return array_unique($roles);
     }
 
-    public function setRoles(string $roles): static
+    public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 
-    public function getDateInscription(): ?\DateTime
+    /** SECURITY **/
+
+    public function eraseCredentials(): void
+    {
+        // rien à effacer
+    }
+
+    /** DATE **/
+
+    public function getDateInscription(): ?\DateTimeImmutable
     {
         return $this->date_inscription;
     }
 
-    public function setDateInscription(\DateTime $date_inscription): static
+    public function setDateInscription(\DateTimeImmutable $date_inscription): static
     {
         $this->date_inscription = $date_inscription;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Reservation>
-     */
+    /** RELATIONS **/
+
     public function getReservations(): Collection
     {
         return $this->reservations;
@@ -142,7 +163,6 @@ class Utilisateur
     public function removeReservation(Reservation $reservation): static
     {
         if ($this->reservations->removeElement($reservation)) {
-            // set the owning side to null (unless already changed)
             if ($reservation->getUtilisateur() === $this) {
                 $reservation->setUtilisateur(null);
             }
@@ -151,9 +171,6 @@ class Utilisateur
         return $this;
     }
 
-    /**
-     * @return Collection<int, Avis>
-     */
     public function getAvis(): Collection
     {
         return $this->avis;
@@ -172,7 +189,6 @@ class Utilisateur
     public function removeAvi(Avis $avi): static
     {
         if ($this->avis->removeElement($avi)) {
-            // set the owning side to null (unless already changed)
             if ($avi->getUtilisateur() === $this) {
                 $avi->setUtilisateur(null);
             }

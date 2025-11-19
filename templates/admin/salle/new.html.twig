@@ -1,0 +1,145 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une salle{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+    }
+
+    .btn-custom {
+        background: #ffd700;
+        color: #000;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .btn-custom:hover {
+        background: #ffed4e;
+        transform: scale(1.05);
+        color: #000;
+    }
+
+    .btn-back {
+        background: #764ba2;
+        color: white;
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    .form-label {
+        color: #764ba2;
+        font-weight: 600;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        border-left: 4px solid #ffd700;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            {# Header #}
+            <div class="mb-4">
+                <a href="{{ path('app_admin_salle_index') }}" class="btn btn-back">
+                    ← Retour au dashboard
+                </a>
+            </div>
+
+            <div class="form-card">
+                <h2 class="mb-1" style="color: #764ba2;">🏢 Ajouter une salle</h2>
+                <p class="text-muted mb-4">Remplissez les informations de la nouvelle salle</p>
+
+                <div class="info-box">
+                    <strong>💡 Astuce :</strong> Assurez-vous que le cinéma existe déjà avant d'ajouter une salle.
+                </div>
+
+                {# Formulaire #}
+                <div class="form-card">
+                    {{ form_start(form) }}
+
+                    <div class="mb-3">
+                        {{ form_label(form.numero_salle) }}
+                        {{ form_widget(form.numero_salle) }}
+                        {{ form_errors(form.numero_salle) }}
+                        <small class="text-muted">Ex: 1, 2, 3...</small>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.nom) }}
+                        {{ form_widget(form.nom) }}
+                        {{ form_errors(form.nom) }}
+                        <small class="text-muted">Nom de la salle (optionnel)</small>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.cinema) }}
+                        {{ form_widget(form.cinema) }}
+                        {{ form_errors(form.cinema) }}
+                        <small class="text-muted">Sélectionnez le cinéma</small>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form_label(form.equipement) }}
+                        {{ form_widget(form.equipement) }}
+                        {{ form_errors(form.equipement) }}
+                        <small class="text-muted">Ex: IMAX, Dolby Atmos, 3D...</small>
+                    </div>
+
+                    {{ form_rest(form) }}
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-custom">
+                            ✅ Créer la salle
+                        </button>
+                        <a href="{{ path('app_admin_salle_index') }}" class="btn btn-outline-secondary">
+                            Annuler
+                        </a>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            {# Messages Flash #}
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} mt-3">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
