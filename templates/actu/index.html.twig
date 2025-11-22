@@ -3,9 +3,21 @@
 {% block title %}Films à l'affiche{% endblock %}
 
 {% block stylesheets %}
-<style>
+<style> 
+
+    body {
+    background-image: radial-gradient(
+        circle at 50.96% 44.55%,
+        #96cdff 0,
+        #469cf9 50%,
+        #006ed4 100%
+    );
+    margin: 0;
+    padding: 0;
+    }
+
     .films-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
         color: white;
         padding: 60px 0;
         margin-bottom: 40px;
@@ -141,6 +153,29 @@
             font-size: 2em;
         }
     }
+    /* Bouton bande-annonce */
+    .btn-trailer {
+        display: block;
+        margin-top: 10px;
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+        background: #ff0000;
+        border-radius: 8px;
+        color: white;
+        font-weight: 700;
+        font-size: 1em;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(255, 0, 0, 0.5);
+        transition: 0.25s ease;
+    }
+
+    .btn-trailer:hover {
+        transform: translateY(-2px);
+        background: #cc0000;
+        box-shadow: 0 6px 20px rgba(255, 0, 0, 0.7);
+    }
+
 </style>
 {% endblock %}
 
@@ -178,6 +213,13 @@
                             <div class="film-card-rating">
                                 ⭐ <span>{{ movie.vote_average|number_format(1) }}</span>/10
                             </div>
+
+                            {# Bouton bande-annonce #}
+                            <a href="https://www.youtube.com/results?search_query={{ movie.title|url_encode }}+trailer"
+                            target="_blank"
+                            class="btn-trailer">
+                            ▶ Voir la bande-annonce
+                            </a>
 
                             {# Résumé court #}
                             {% if movie.overview %}

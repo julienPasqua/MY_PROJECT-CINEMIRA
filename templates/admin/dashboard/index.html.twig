@@ -16,7 +16,6 @@
         margin: 0 auto;
     }
 
-    /* Header Section */
     .dashboard-header {
         background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
         border-radius: 16px;
@@ -67,7 +66,6 @@
         backdrop-filter: blur(10px);
     }
 
-    /* Stats Cards */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -136,7 +134,6 @@
         font-weight: 600;
     }
 
-    /* Actions Section */
     .actions-section {
         background: white;
         border-radius: 16px;
@@ -222,7 +219,6 @@
         color: #000;
     }
 
-    /* Quick Links */
     .quick-links {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -257,7 +253,6 @@
         font-size: 1rem;
     }
 
-    /* Alerts */
     .alert-custom {
         border-radius: 12px;
         border: none;
@@ -276,7 +271,6 @@
         color: #1e40af;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
         .dashboard-header h1 {
             font-size: 1.8rem;
@@ -319,10 +313,17 @@
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">🪑</div>
+            <div class="stat-icon">🏢</div>
             <div class="stat-label">Salles</div>
             <div class="stat-number">{{ salleCount }}</div>
             <div class="stat-trend">↗ Actives</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🪑</div>
+            <div class="stat-label">Sièges</div>
+            <div class="stat-number">{{ siegeCount|default(0) }}</div>
+            <div class="stat-trend">↗ Configurés</div>
         </div>
 
         <div class="stat-card">
@@ -350,6 +351,10 @@
             <div class="quick-link-icon">🏢</div>
             <div class="quick-link-text">Gérer les salles</div>
         </a>
+        <a href="{{ path('app_admin_siege_index') }}" class="quick-link">
+            <div class="quick-link-icon">🪑</div>
+            <div class="quick-link-text">Gérer les sièges</div>
+        </a>
         <a href="{{ path('app_admin_seance_index') }}" class="quick-link">
             <div class="quick-link-icon">🎥</div>
             <div class="quick-link-text">Gérer les séances</div>
@@ -374,10 +379,18 @@
             </div>
 
             <div class="action-card">
-                <h3>🪑 Nouvelle Salle</h3>
+                <h3>🏢 Nouvelle Salle</h3>
                 <p>Créez une nouvelle salle pour un cinéma existant et définissez sa capacité d'accueil.</p>
                 <a href="{{ path('app_admin_salle_new') }}" class="btn-action">
                     ➕ Ajouter une salle
+                </a>
+            </div>
+
+            <div class="action-card">
+                <h3>🪑 Générer des Sièges</h3>
+                <p>Créez automatiquement tous les sièges d'une salle en définissant le nombre de rangées et places.</p>
+                <a href="{{ path('app_admin_siege_generate') }}" class="btn-action">
+                    ⚡ Générer des sièges
                 </a>
             </div>
 

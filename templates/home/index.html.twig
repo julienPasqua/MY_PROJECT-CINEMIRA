@@ -1,36 +1,127 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ name }}🎬CineMira{% endblock %}
+{% block title %}Accueil - CineMira{% endblock %}
 
 {% set show_Search_Bar = false %}
 
-{% block body %}
-<div class="container mt-5">
-    <h1 class="mb-4">Welcome to CineMira {{ name }}!</h1>
-    <p class="lead">Le site qui va changé la façon dont vous découvrez les films.</p>
-    <!--<a href="#" class="btn btn-primary btn-lg mt-3">Explore Movies</a>-->
-</div>
+{% block stylesheets %}
+{{ parent() }}
+<style>
+/* ====== Film du mois Banniere Fullscreen ====== */
+.hero-film {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    border-radius:10px;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-shadow: 0 2px 15px rgba(0,0,0,0.7);
+    font-family: 'Futura', sans-serif;
+    margin-bottom:20px;
+}
 
-        <!-- Colonne droite : film du mois -->
-        {% if filmDuMois %}
-        <div class="col-md-6 text-center">
-            <aside class="film-du-mois">
-                <span class="film-du-mois-badge d-block mb-2">⭐ FILM N°1 DU MOIS</span>
-                <h2>Le Plus Populaire</h2>
-                
+/* Overlay beaucoup plus léger */
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.15),   /* avant 0.4 → trop sombre */
+        rgba(0, 0, 0, 0.45)    /* avant 0.9 → totalement opaque */
+    );
+    z-index: 2;
+}
 
-                <img src="https://image.tmdb.org/t/p/w500{{ filmDuMois.poster_path }}" 
-                     alt="{{ filmDuMois.title }}" 
-                     class="film-du-mois-poster img-fluid rounded shadow">
-                <div class="film-du-mois-info mt-3">
-                    <h3>{{ filmDuMois.title }}</h3>
-                    <p><strong>Date de sortie :</strong> {{ filmDuMois.release_date|date('d/m/Y') }}</p>
-                    <p><strong>Langue :</strong> {{ filmDuMois.original_language|upper }}</p>
-                </div>
-            </aside>
-        </div>
+.hero-content {
+    position: relative;
+    max-width: 900px;
+    text-align: center;
+    z-index: 2;
+}
 
-        {% endif %}
-    </main>
-{% endblock %}
+.hero-content h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: #ffd700; /* jaune CineMira */
+}
+
+.hero-content p {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+    opacity: 0.9;
+    color: #fff;
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    .hero-content p {
+        font-size: 1.2rem;
+    }
+}
+.movie-poster {
+    width: 100%;
+    max-width: 350px;
+    border-radius: 15px;
+    display: block;
+    margin: 0 auto;
+
+    /* Ombre principale (profondeur) */
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.4),
+
+        /* Glow doux sur les côtés */
+        inset 15px 0 25px rgba(0, 0, 0, 0.4),
+        inset -15px 0 25px rgba(0, 0, 0, 0.4);
     
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.movie-poster:hover {
+    transform: scale(1.03);
+    box-shadow:
+        0 15px 30px rgba(0, 0, 0, 0.5),
+        inset 20px 0 30px rgba(0, 0, 0, 0.5),
+        inset -20px 0 30px rgba(0, 0, 0, 0.5);
+}
+.tmdb-rating {
+    display: inline-block;
+    padding: 8px 18px;
+    margin-top: 15px;
+    background: rgba(255, 215, 0, 0.15); /* doré léger */
+    border: 1px solid #ffd700;
+    border-radius: 50px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffd700;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+}
+
+</style>
+{% endblock %}
+
+{% block body %}
+
+{% if filmDuMois %}
+<section class="hero-film" style="background-image: url('https://image.tmdb.org/t/p/original{{ filmDuMois.backdrop_path ?: filmDuMois.poster_path }}');">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>{{ filmDuMois.title }}</h1>
+        <p>Sorti le {{ filmDuMois.release_date|date('d/m/Y') }} • Langue : {{ filmDuMois.original_language|upper }}</p>
+        <div class="tmdb-rating">
+    ⭐ {{ filmDuMois.vote_average }}/10
+    </div>
+
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

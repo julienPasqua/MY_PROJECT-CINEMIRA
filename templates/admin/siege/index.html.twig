@@ -1,0 +1,198 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des sièges{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    .content-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-top: 15px;
+    }
+    .page-title {
+        color: white;
+        font-weight: 800;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1rem;
+    }
+    .btn-back {
+        background: #764ba2;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        transition: 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .btn-back:hover {
+        background: #667eea;
+        color: white;
+    }
+    .btn-custom {
+        background: #ffd700;
+        color: #000;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .btn-custom:hover {
+        background: #ffed4e;
+        transform: scale(1.05);
+        color: #000;
+    }
+    .btn-generate {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-generate:hover {
+        transform: scale(1.05);
+        color: white;
+    }
+    .salle-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    .salle-card:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    .salle-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    .salle-title {
+        font-weight: 700;
+        color: #764ba2;
+        font-size: 1.2rem;
+    }
+    .salle-stats {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+    .stat-badge {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    .btn-view {
+        background: #667eea;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .btn-view:hover {
+        background: #764ba2;
+        color: white;
+    }
+    .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .flash-success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <h1 class="page-title">🪑 Gestion des Sièges</h1>
+
+    <div class="header-actions">
+        <a href="{{ path('app_admin_dashboard') }}" class="btn-back">⬅ Dashboard</a>
+        <div>
+            <a href="{{ path('app_admin_siege_new') }}" class="btn-custom">➕ Nouveau siège</a>
+            <a href="{{ path('app_admin_siege_generate') }}" class="btn-generate">⚡ Générer des sièges</a>
+        </div>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="flash-success">✅ {{ message }}</div>
+    {% endfor %}
+
+    <div class="content-card">
+        <h4 class="mb-4">📍 Sièges par salle</h4>
+
+        {% if salles is empty %}
+            <div class="empty-state">
+                <div class="empty-state-icon">🎭</div>
+                <h3>Aucune salle trouvée</h3>
+                <p>Créez d'abord des salles pour gérer les sièges</p>
+            </div>
+        {% else %}
+            {% for salle in salles %}
+                <div class="salle-card">
+                    <div class="salle-header">
+                        <div>
+                            <span class="salle-title">
+                                🎬 Salle {{ salle.numeroSalle }} 
+                                {% if salle.nom %}- {{ salle.nom }}{% endif %}
+                            </span>
+                            {% if salle.equipement %}
+                                <small class="text-muted d-block">{{ salle.equipement }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="salle-stats">
+                            <span class="stat-badge">{{ salle.capacite }} sièges</span>
+                            <a href="{{ path('app_admin_siege_by_salle', {id: salle.id}) }}" class="btn-view">
+                                👁️ Voir les sièges
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

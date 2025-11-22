@@ -1,0 +1,353 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sièges - Salle {{ salle.numeroSalle }}{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    .content-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-top: 15px;
+    }
+    .page-title {
+        color: white;
+        font-weight: 800;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1rem;
+    }
+    .btn-back {
+        background: #764ba2;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        transition: 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .btn-back:hover {
+        background: #667eea;
+        color: white;
+    }
+    .btn-custom {
+        background: #ffd700;
+        color: #000;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-custom:hover {
+        background: #ffed4e;
+        transform: scale(1.05);
+        color: #000;
+    }
+    .btn-danger-custom {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .btn-danger-custom:hover {
+        background: #c82333;
+    }
+    .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .flash-success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    .salle-plan {
+        background: #1a1a2e;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .ecran {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        text-align: center;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+    .rangee {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+    .rangee-label {
+        width: 30px;
+        color: white;
+        font-weight: 600;
+        text-align: center;
+    }
+    .siege {
+        width: 35px;
+        height: 35px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .siege:hover {
+        transform: scale(1.1);
+    }
+    .siege-standard {
+        background: #28a745;
+        color: white;
+    }
+    .siege-vip {
+        background: #ffd700;
+        color: #000;
+    }
+    .siege-handicape {
+        background: #17a2b8;
+        color: white;
+    }
+    .siege-occupe {
+        background: #6c757d;
+        color: white;
+    }
+    .legende {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+    }
+    .legende-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: white;
+        font-size: 0.9rem;
+    }
+    .legende-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+    }
+    .table-custom {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table-custom thead {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+    .table-custom th {
+        padding: 1rem;
+        text-align: left;
+    }
+    .table-custom td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+    .table-custom tbody tr:hover {
+        background: #f8f9fa;
+    }
+    .badge-type {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .badge-standard { background: #d4edda; color: #155724; }
+    .badge-vip { background: #fff3cd; color: #856404; }
+    .badge-handicape { background: #d1ecf1; color: #0c5460; }
+    .badge-occupe { background: #e2e3e5; color: #383d41; }
+    .btn-action {
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        margin: 0 2px;
+        text-decoration: none;
+    }
+    .btn-edit { background: #667eea; color: white; }
+    .btn-edit:hover { background: #764ba2; color: white; }
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-delete:hover { background: #c82333; }
+    .delete-form { display: inline; }
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+    .salle-info {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border-left: 4px solid #764ba2;
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <h1 class="page-title">🪑 Sièges - Salle {{ salle.numeroSalle }}</h1>
+
+    <div class="header-actions">
+        <a href="{{ path('app_admin_siege_index') }}" class="btn-back">⬅ Retour</a>
+        <div>
+            <a href="{{ path('app_admin_siege_new') }}" class="btn-custom">➕ Ajouter un siège</a>
+            {% if sieges|length > 0 %}
+            <form method="post" action="{{ path('app_admin_siege_delete_all', {id: salle.id}) }}" 
+                  style="display: inline;"
+                  onsubmit="return confirm('⚠️ Supprimer TOUS les sièges de cette salle ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete_all' ~ salle.id) }}">
+                <button type="submit" class="btn-danger-custom">🗑️ Tout supprimer</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="flash-success">✅ {{ message }}</div>
+    {% endfor %}
+
+    <div class="content-card">
+        <div class="salle-info">
+            🎬 <strong>Salle {{ salle.numeroSalle }}{% if salle.nom %} - {{ salle.nom }}{% endif %}</strong>
+            {% if salle.equipement %}<br><small>{{ salle.equipement }}</small>{% endif %}
+            <br><span class="badge-type badge-standard">{{ sieges|length }} sièges</span>
+        </div>
+
+        {% if sieges|length > 0 %}
+            <div class="salle-plan">
+                <div class="ecran">📽️ ÉCRAN</div>
+                
+                {% set siegesByRangee = {} %}
+                {% for siege in sieges %}
+                    {% set rangee = siege.numeroRangee %}
+                    {% if siegesByRangee[rangee] is not defined %}
+                        {% set siegesByRangee = siegesByRangee|merge({(rangee): []}) %}
+                    {% endif %}
+                    {% set siegesByRangee = siegesByRangee|merge({(rangee): siegesByRangee[rangee]|merge([siege])}) %}
+                {% endfor %}
+                
+                {% for rangee, siegesRangee in siegesByRangee|sort %}
+                    <div class="rangee">
+                        <span class="rangee-label">{{ rangee }}</span>
+                        {% for siege in siegesRangee|sort((a, b) => a.numeroPlace <=> b.numeroPlace) %}
+                            <div class="siege siege-{{ siege.type.value }}" 
+                                 title="{{ rangee }}{{ siege.numeroPlace }} - {{ siege.type.value|capitalize }}">
+                                {{ siege.numeroPlace }}
+                            </div>
+                        {% endfor %}
+                        <span class="rangee-label">{{ rangee }}</span>
+                    </div>
+                {% endfor %}
+                
+                <div class="legende">
+                    <div class="legende-item">
+                        <div class="legende-color siege-standard"></div>
+                        <span>Standard</span>
+                    </div>
+                    <div class="legende-item">
+                        <div class="legende-color siege-vip"></div>
+                        <span>VIP</span>
+                    </div>
+                    <div class="legende-item">
+                        <div class="legende-color siege-handicape"></div>
+                        <span>PMR</span>
+                    </div>
+                    <div class="legende-item">
+                        <div class="legende-color siege-occupe"></div>
+                        <span>Indisponible</span>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="mb-3">📋 Liste détaillée</h5>
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Place</th>
+                        <th>Type</th>
+                        <th>Supplément</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for siege in sieges|sort((a, b) => a.numeroRangee <=> b.numeroRangee ?: a.numeroPlace <=> b.numeroPlace) %}
+                    <tr>
+                        <td><strong>{{ siege.numeroRangee }}{{ siege.numeroPlace }}</strong></td>
+                        <td>
+                            <span class="badge-type badge-{{ siege.type.value }}">
+                                {{ siege.type.value|capitalize }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if siege.prixSupplement and siege.prixSupplement > 0 %}
+                                +{{ siege.prixSupplement }} €
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('app_admin_siege_edit', {id: siege.id}) }}" class="btn-action btn-edit">✏️</a>
+                            <form method="post" action="{{ path('app_admin_siege_delete', {id: siege.id}) }}" 
+                                  class="delete-form"
+                                  onsubmit="return confirm('Supprimer ce siège ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ siege.id) }}">
+                                <button type="submit" class="btn-action btn-delete">🗑️</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <div style="font-size: 4rem;">🪑</div>
+                <h3>Aucun siège dans cette salle</h3>
+                <p>Utilisez le générateur pour créer des sièges rapidement</p>
+                <a href="{{ path('app_admin_siege_generate') }}" class="btn-custom" style="margin-top: 1rem;">
+                    ⚡ Générer des sièges
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

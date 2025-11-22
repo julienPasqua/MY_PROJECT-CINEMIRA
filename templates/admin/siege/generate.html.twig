@@ -1,0 +1,236 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Générer des sièges{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    .content-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-top: 15px;
+    }
+    .page-title {
+        color: white;
+        font-weight: 800;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1rem;
+    }
+    .btn-back {
+        background: #764ba2;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        transition: 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-back:hover {
+        background: #667eea;
+        color: white;
+    }
+    .btn-save {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .btn-save:hover {
+        transform: scale(1.05);
+    }
+    .form-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e9ecef;
+    }
+    .form-section-title {
+        font-weight: 700;
+        color: #764ba2;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .form-section-title .icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        outline: none;
+    }
+    .btn-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+    }
+    .preview-box {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border: 2px dashed #764ba2;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        margin-top: 1rem;
+    }
+    .preview-box h4 {
+        color: #764ba2;
+        margin-bottom: 0.5rem;
+    }
+    .preview-number {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .info-alert {
+        background: #e8f4fd;
+        border-left: 4px solid #667eea;
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 1.5rem;
+        color: #333;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <h1 class="page-title">⚡ Générer des sièges</h1>
+
+    <a href="{{ path('app_admin_siege_index') }}" class="btn-back">⬅ Retour</a>
+
+    <div class="content-card">
+
+        <div class="info-alert">
+            💡 <strong>Astuce :</strong> Cet outil crée automatiquement tous les sièges d'une salle. 
+            Les rangées seront nommées A, B, C... et les places numérotées 1, 2, 3...
+        </div>
+
+        {{ form_start(form) }}
+
+        <div class="form-section">
+            <div class="form-section-title">
+                <span class="icon">🎬</span>
+                <span>Configuration</span>
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(form.salle) }}
+                {{ form_widget(form.salle, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    {{ form_label(form.nb_rangees) }}
+                    {{ form_widget(form.nb_rangees, {'attr': {'class': 'form-control', 'id': 'nb_rangees'}}) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.nb_places_par_rangee) }}
+                    {{ form_widget(form.nb_places_par_rangee, {'attr': {'class': 'form-control', 'id': 'nb_places'}}) }}
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    {{ form_label(form.type) }}
+                    {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.prix_supplement) }}
+                    {{ form_widget(form.prix_supplement, {'attr': {'class': 'form-control'}}) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-box">
+            <h4>📊 Aperçu</h4>
+            <div class="preview-number" id="preview-total">120</div>
+            <p>sièges seront créés</p>
+            <small class="text-muted" id="preview-detail">10 rangées × 12 places</small>
+        </div>
+
+        <div class="btn-actions">
+            <a href="{{ path('app_admin_siege_index') }}" class="btn-back">↩ Annuler</a>
+            <button type="submit" class="btn-save">⚡ Générer les sièges</button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nbRangees = document.getElementById('nb_rangees');
+    const nbPlaces = document.getElementById('nb_places');
+    const previewTotal = document.getElementById('preview-total');
+    const previewDetail = document.getElementById('preview-detail');
+
+    function updatePreview() {
+        const r = parseInt(nbRangees.value) || 0;
+        const p = parseInt(nbPlaces.value) || 0;
+        const total = r * p;
+        
+        previewTotal.textContent = total;
+        previewDetail.textContent = r + ' rangées × ' + p + ' places';
+    }
+
+    nbRangees.addEventListener('input', updatePreview);
+    nbPlaces.addEventListener('input', updatePreview);
+    updatePreview();
+});
+</script>
+{% endblock %}

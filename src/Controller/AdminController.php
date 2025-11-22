@@ -13,23 +13,28 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\CinemaRepository;
 use App\Repository\SalleRepository;
+use App\Repository\SeanceRepository;
+use App\Repository\ReservationRepository;
+use App\Repository\SiegeRepository;
 
 #[Route('/admin')]
 class AdminController extends AbstractController
 {
     #[Route('/', name: 'app_admin_dashboard')]
-    public function dashboard(CinemaRepository $cinemaRepo, SalleRepository $salleRepo): Response
+    public function dashboard(CinemaRepository $cinemaRepo, SalleRepository $salleRepo, SeanceRepository $seancesRepo, ReservationRepository $reservationRepo, SiegeRepository $siegeRepo   ): Response
     {
         $cinemaCount = $cinemaRepo->count([]);
         $salleCount = $salleRepo->count([]);
-        $seancesCount = 0; // Ajoute si tu as un repository pour les séances
-        $reservationCount = 0; // Ajoute si tu as un repository pour les réservations
+        $seancesCount = $seancesRepo->count([]);
+        $reservationCount = $reservationRepo->count([]);
+        $siegeCount = $siegeRepo->count([]);
 
         return $this->render('admin/dashboard/index.html.twig', [
             'cinemaCount' => $cinemaCount,
             'salleCount' => $salleCount,
             'seanceCount' => $seancesCount,
             'reservationCount' => $reservationCount,
+            'siegeCount' => $siegeCount,
         ]);
     }
 
