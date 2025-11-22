@@ -36,3 +36,5 @@
 # Windows
 Thumbs.db
 ###< IDE & OS ###
+
+/node_modules/

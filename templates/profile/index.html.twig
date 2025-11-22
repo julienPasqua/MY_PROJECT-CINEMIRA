@@ -2,59 +2,184 @@
 
 {% block title %}Mon Compte{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+{{ parent() }}
 <style>
+    body {
+        background: linear-gradient(135deg, #667eea, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    .content-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 0;
+        margin-top: 15px;
+        overflow: hidden;
+    }
+    .card-header-custom {
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        color: #000;
+        padding: 1.25rem 2rem;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    .card-body-custom {
+        padding: 2rem;
+    }
+    .page-title {
+        color: white;
+        font-weight: 800;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1rem;
+    }
+    .btn-back {
+        background: #764ba2;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        transition: 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+    .btn-back:hover {
+        background: #667eea;
+        color: white;
+    }
+    .info-row {
+        display: flex;
+        padding: 1rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #764ba2;
+        width: 150px;
+        flex-shrink: 0;
+    }
+    .info-value {
+        color: #333;
+    }
+    .badge-role {
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        color: #000;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-right: 8px;
+        display: inline-block;
+    }
+    .section-title {
+        color: #764ba2;
+        font-weight: 700;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #764ba2;
+    }
+    .btn-logout {
+        background: #dc3545;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+    .btn-logout:hover {
+        background: #c82333;
+        color: white;
+        transform: translateY(-2px);
+    }
     .btn-admin {
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    color: #000;
-    padding: 1rem 2rem;
-    border-radius: 10px;
-    font-weight: bold;
-    text-decoration: none;
-    display: inline-block;
-    margin-left: 1rem;
-}
-
-.btn-admin:hover {
-    background: linear-gradient(135deg, #ffed4e, #ffd700);
-    transform: translateY(-2px);
-    color: #000;
-}
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        color: #000;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    }
+    .btn-admin:hover {
+        background: linear-gradient(135deg, #ffed4e, #ffd700);
+        transform: translateY(-3px);
+        color: #000;
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+    }
+    .admin-access {
+        text-align: center;
+        margin-top: 2rem;
+    }
+    .actions-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    .user-avatar {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
 </style>
+{% endblock %}
 
-<div class="container py-5">
+{% block body %}
+<div class="container py-4">
 
-    <div class="card shadow-lg border-0 bg-dark text-light" style="border-radius: 12px;">
-        <div class="card-header bg-warning text-dark fw-bold" style="border-radius: 12px 12px 0 0;">
+    <h1 class="page-title">👤 Mon Compte</h1>
+
+    <a href="home.index" class="btn-back">⬅ Retour à l'accueil</a>
+
+    <div class="content-card">
+        <div class="card-header-custom">
             🎬 Mon Espace Personnel
         </div>
 
-        <div class="card-body">
+        <div class="card-body-custom">
+
+            <div class="user-avatar">
+                {{ user.email|first|upper }}
+            </div>
 
             <h4 class="mb-4">Informations du compte</h4>
 
-            <div class="row mb-3">
-                <div class="col-md-4 fw-bold">Email :</div>
-                <div class="col-md-8">{{ user.email }}</div>
+            <div class="info-row">
+                <div class="info-label">📧 Email :</div>
+                <div class="info-value">{{ user.email }}</div>
             </div>
 
-            <div class="row mb-3">
-                <div class="col-md-4 fw-bold">Rôle :</div>
-                <div class="col-md-8">
+            <div class="info-row">
+                <div class="info-label">🎭 Rôle :</div>
+                <div class="info-value">
                     {% for role in user.roles %}
-                        <span class="badge bg-warning text-dark me-1">{{ role }}</span>
+                        <span class="badge-role">{{ role }}</span>
                     {% endfor %}
                 </div>
             </div>
 
-            <hr class="border-secondary my-4">
+            <h5 class="section-title">⚡ Actions rapides</h5>
 
-            <h5 class="text-warning">Actions rapides</h5>
-
-            <div class="d-flex flex-wrap gap-3 mt-3">
-
-                <a href="{{ path('app_logout') }}" class="btn btn-danger">
-                    Se déconnecter
+            <div class="actions-container">
+                <a href="{{ path('app_logout') }}" class="btn-logout">
+                    🚪 Se déconnecter
                 </a>
 
                 {# <a href="{{ path('cinema_new') }}" class="btn btn-outline-warning">
@@ -64,21 +189,19 @@
                 {# <a href="{{ path('app_change_password') }}" class="btn btn-outline-light">
                     🔑 Changer mon mot de passe
                 </a> #}
-
             </div>
 
         </div>
     </div>
 
+    {# Accès admin si l'utilisateur a le rôle ADMIN #}
+    {% if is_granted('ROLE_ADMIN') %}
+        <div class="admin-access">
+            <a href="{{ path('app_admin_dashboard') }}" class="btn-admin">
+                👑 Accéder au Dashboard Admin
+            </a>
+        </div>
+    {% endif %}
+
 </div>
-
-{# Accès admin si l'utilisateur a le rôle ADMIN #}
-{% if is_granted('ROLE_ADMIN') %}
-    <div class="admin-access">
-        <a href="{{ path('app_admin_dashboard') }}" class="btn btn-admin">
-            👑 Accéder au Dashboard Admin
-        </a>
-    </div>
-{% endif %}
 {% endblock %}
-

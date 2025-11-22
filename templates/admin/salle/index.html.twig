@@ -58,11 +58,14 @@
         padding: 0.4em 0.9em;
         border-radius: 20px;
     }
-    .btn-action {
-        padding: 0.25rem 0.75rem;
+      .btn-action {
+        padding: 0.4rem 0.75rem;
         border-radius: 6px;
         font-size: 0.85rem;
         margin: 0 0.25rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s ease;
     }
     .btn-edit {
         background: #667eea;
@@ -188,9 +191,8 @@
 
                             <td class="text-center">
                                 <a href="{{ path('app_admin_salle_edit', {id: salle.id}) }}" 
-                                   class="btn-action btn-edit" 
-                                   title="Modifier">
-                                    ✏️
+                                   class="btn-action btn-edit" title="Modifier">
+                                    ✏️ Modifier
                                 </a>
 
                                 <form method="post" 

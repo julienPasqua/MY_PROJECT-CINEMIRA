@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier une salle{% endblock %}
+{% block title %}Modifier une séance{% endblock %}
 
 {% block stylesheets %}
 {{ parent() }}
@@ -9,7 +9,7 @@
         background: linear-gradient(135deg, #667eea, #764ba2 100%);
         min-height: calc(100vh - 200px);
         padding: 2rem 0;
-        border-radius:10px
+        border-radius:10px;
     }
     .container {
         max-width: 1140px;
@@ -141,39 +141,97 @@
 <div class="page-wrapper">
     <div class="container">
 
-    <h1 class="page-title">✏️ Modifier la salle</h1>
+    <h1 class="page-title">✏️ Modifier la séance</h1>
 
-    <a href="{{ path('app_admin_salle_index') }}" class="btn-back">⬅ Retour à la liste</a>
+    <a href="{{ path('app_admin_seance_index') }}" class="btn-back">⬅ Retour à la liste</a>
 
     <div class="content-card">
-
-        <div class="current-info">
-            🎭 Modification de la salle : <strong>{{ salle.nom ?? salle.numeroSalle ?? 'Salle' }}</strong>
-        </div>
-
         {{ form_start(form) }}
 
+        <!-- Section: Film actuel -->
+        {% if current_film is defined and current_film %}
         <div class="form-section">
             <div class="form-section-title">
-                <span class="icon">🎭</span>
-                <span>Informations de la salle</span>
+                <span class="icon">🎬</span>
+                <span>Film associé</span>
             </div>
-            <div class="form-grid">
-                {% for field in form %}
-                    {% if field.vars.name != '_token' %}
-                    <div class="form-group">
-                        {{ form_label(field) }}
-                        {{ form_widget(field, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(field) }}
-                    </div>
-                    {% endif %}
-                {% endfor %}
+            <div class="current-film">
+                {% if current_film.poster_path %}
+                    <img src="https://image.tmdb.org/t/p/w200{{ current_film.poster_path }}" alt="">
+                {% endif %}
+                <div class="current-film-info">
+                    <strong>{{ current_film.title }}</strong><br>
+                    <small>TMDB #{{ current_film.id }}</small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Section: Date & Heure -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <span class="icon">📅</span>
+                <span>Date et horaire</span>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.date_seance) }}
+                {{ form_widget(form.date_seance, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.date_seance) }}
             </div>
         </div>
 
+        <!-- Section: Détails -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <span class="icon">⚙️</span>
+                <span>Détails de la séance</span>
+            </div>
+            <div class="form-grid">
+                {% if form.heure_debut is defined %}
+                <div class="form-group">
+                    {{ form_label(form.heure_debut) }}
+                    {{ form_widget(form.heure_debut, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                {% endif %}
+
+                {% if form.prix_base is defined %}
+                <div class="form-group">
+                    {{ form_label(form.prix_base) }}
+                    {{ form_widget(form.prix_base, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                {% endif %}
+
+                {% if form.version is defined %}
+                <div class="form-group">
+                    {{ form_label(form.version) }}
+                    {{ form_widget(form.version, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                {% endif %}
+
+                {% if form.salle is defined %}
+                <div class="form-group">
+                    {{ form_label(form.salle) }}
+                    {{ form_widget(form.salle, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                {% endif %}
+
+                {% if form.format is defined %}
+                <div class="form-group">
+                    {{ form_label(form.format) }}
+                    {{ form_widget(form.format, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Boutons -->
         <div class="btn-actions">
-            <a href="{{ path('app_admin_salle_index') }}" class="btn-back">↩ Annuler</a>
-            <button type="submit" class="btn-save">💾 Enregistrer</button>
+            <a href="{{ path('app_admin_seance_index') }}" class="btn-back">
+                ↩ Annuler
+            </a>
+            <button type="submit" class="btn-save">
+                💾 Enregistrer les modifications
+            </button>
         </div>
 
         {{ form_end(form) }}

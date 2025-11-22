@@ -1,0 +1,278 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des séances{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    .content-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-top: 15px;
+    }
+    .page-title {
+        color: white;
+        font-weight: 800;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1rem;
+    }
+    .btn-custom {
+        background: #ffd700;
+        color: #000;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+    .btn-custom:hover {
+        background: #ffed4e;
+        transform: scale(1.05);
+        color: #000;
+    }
+    .btn-back {
+        background: #764ba2;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        transition: 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+    .btn-back:hover {
+        background: #667eea;
+        color: white;
+    }
+    .table-custom {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table-custom thead {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+    .table-custom th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+    }
+    .table-custom td {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+    .table-custom tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    .btn-action {
+        padding: 0.4rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        margin: 0 0.25rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s ease;
+    }
+    .btn-edit {
+        background: #667eea;
+        border: none;
+        color: white;
+    }
+    .btn-edit:hover {
+        background: #764ba2;
+        color: white;
+    }
+    .btn-delete {
+        background: #dc3545;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
+    .btn-delete:hover {
+        background: #c82333;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+    .empty-state-icon {
+        font-size: 4rem;
+        opacity: 0.8;
+        margin-bottom: 1rem;
+    }
+    .film-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .film-poster {
+        width: 45px;
+        height: 65px;
+        object-fit: cover;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    .film-poster-placeholder {
+        width: 45px;
+        height: 65px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+    .badge-id {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    .badge-time {
+        background: #e8f4fd;
+        color: #667eea;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+    .badge-salle {
+        background: #f3e8ff;
+        color: #764ba2;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    .delete-form {
+        display: inline;
+    }
+    .flash-success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    .flash-error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <h1 class="page-title">🎬 Gestion des Séances</h1>
+
+    <!-- Boutons header -->
+    <div class="header-actions">
+        <a href="{{ path('app_admin_dashboard') }}" class="btn-back">⬅ Retour Dashboard</a>
+        <a href="{{ path('app_admin_seance_new') }}" class="btn-custom">➕ Nouvelle séance</a>
+    </div>
+
+    <!-- Flash Messages -->
+    {% for message in app.flashes('success') %}
+        <div class="flash-success">✅ {{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="flash-error">❌ {{ message }}</div>
+    {% endfor %}
+
+    <!-- Card contenu -->
+    <div class="content-card">
+        {% if seances is empty %}
+            <div class="empty-state">
+                <div class="empty-state-icon">🎭</div>
+                <h3>Aucune séance programmée</h3>
+                <p>Commencez par créer votre première séance</p>
+            </div>
+        {% else %}
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Heure</th>
+                        <th>Film</th>
+                        <th>Salle</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for seance in seances %}
+                    <tr>
+                        <td>
+                            <span class="badge-id">#{{ seance.id }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ seance.dateSeance|date('d/m/Y') }}</strong>
+                        </td>
+                        <td>
+                            <span class="badge-time">{{ seance.heureDebut|date('H:i') }}</span>
+                        </td>
+                        <td>
+                            <div class="film-info">
+                                {% if seance.film %}
+                                    {% if seance.film.posterUrl %}
+                                        <img src="{{ seance.film.posterUrl }}" alt="" class="film-poster">
+                                    {% else %}
+                                        <div class="film-poster-placeholder">🎬</div>
+                                    {% endif %}
+                                    <span>{{ seance.film.titre }}</span>
+                                {% else %}
+                                    <div class="film-poster-placeholder">🎬</div>
+                                    <span>N/A</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge-salle">Salle {{ seance.salle.numeroSalle }}</span>
+                        </td>
+                        <td>
+                            <a href="{{ path('app_admin_seance_edit', {id: seance.id}) }}" class="btn-action btn-edit">
+                                ✏️ Modifier
+                            </a>
+                            <form method="post" action="{{ path('app_admin_seance_delete', {id: seance.id}) }}" 
+                                  class="delete-form"
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette séance ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ seance.id) }}">
+                                <button type="submit" class="btn-action btn-delete">🗑️</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

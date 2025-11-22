@@ -31,6 +31,9 @@ class Seance
     #[ORM\Column(length: 10)]
     private ?string $format;
 
+    #[ORM\Column(type: 'integer' , nullable: true)]
+    private ?int $tmdbId = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'seances')]
     #[ORM\JoinColumn(nullable: false)]
@@ -43,7 +46,7 @@ class Seance
     private Collection $reservations;
 
     #[ORM\ManyToOne(inversedBy: 'seances')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Film $film = null;
 
     public function __construct()
@@ -123,6 +126,18 @@ class Seance
         return $this;
     }
 
+    public function setTmdbId(?int $tmdbId)
+    {
+        $this->tmdbId = $tmdbId;
+
+        return $this;
+    }
+
+    public function getTmdbId(): ?int
+    {
+
+        return $this->tmdbId;
+    }
 
 
     public function getSalle(): ?Salle
@@ -178,4 +193,5 @@ class Seance
 
         return $this;
     }
+ 
 }

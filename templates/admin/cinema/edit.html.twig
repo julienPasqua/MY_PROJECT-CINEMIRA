@@ -2,15 +2,183 @@
 
 {% block title %}Modifier un cinéma{% endblock %}
 
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .page-wrapper {
+        background: linear-gradient(135deg, #667eea, #764ba2 100%);
+        min-height: calc(100vh - 200px);
+        padding: 2rem 0;
+        border-radius:10px;
+    }
+    .container {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+    .content-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-top: 15px;
+    }
+    .page-title {
+        color: white;
+        font-weight: 800;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1rem;
+    }
+    .btn-back {
+        background: #764ba2;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        transition: 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-back:hover {
+        background: #667eea;
+        color: white;
+    }
+    .btn-save {
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        color: #000;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    .btn-save:hover {
+        background: linear-gradient(135deg, #ffed4e, #ffd700);
+        transform: scale(1.05);
+        color: #000;
+    }
+    .form-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e9ecef;
+    }
+    .form-section-title {
+        font-weight: 700;
+        color: #764ba2;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .form-section-title .icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        outline: none;
+    }
+    .btn-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+    }
+    .current-info {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border-left: 4px solid #764ba2;
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 1.5rem;
+    }
+    .current-info strong {
+        color: #764ba2;
+    }
+</style>
+{% endblock %}
+
 {% block body %}
-<div class="container mt-5">
-    <h1 class="mb-4">Modifier le cinéma : {{ cinema.nom }}</h1>
+<div class="page-wrapper">
+    <div class="container">
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
+    <h1 class="page-title">✏️ Modifier le cinéma</h1>
 
-        <button class="btn btn-warning mt-3">💾 Enregistrer</button>
-        <a href="{{ path('app_admin_cinema_index') }}" class="btn btn-secondary mt-3">↩ Retour</a>
-    {{ form_end(form) }}
+    <a href="{{ path('app_admin_cinema_index') }}" class="btn-back">⬅ Retour à la liste</a>
+
+    <div class="content-card">
+
+        <div class="current-info">
+            🎬 Modification du cinéma : <strong>{{ cinema.nom }}</strong>
+        </div>
+
+        {{ form_start(form) }}
+
+        <div class="form-section">
+            <div class="form-section-title">
+                <span class="icon">🏢</span>
+                <span>Informations du cinéma</span>
+            </div>
+            <div class="form-grid">
+                {% for field in form %}
+                    {% if field.vars.name != '_token' %}
+                    <div class="form-group">
+                        {{ form_label(field) }}
+                        {{ form_widget(field, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(field) }}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="btn-actions">
+            <a href="{{ path('app_admin_cinema_index') }}" class="btn-back">↩ Annuler</a>
+            <button type="submit" class="btn-save">💾 Enregistrer</button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+</div>
 </div>
 {% endblock %}

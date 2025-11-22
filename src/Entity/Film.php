@@ -56,7 +56,7 @@ class Film
     private ?string $bande_annonce_url = null;
 
     #[ORM\Column]
-    private ?\DateTime $date_creation = null;
+    private ?\DateTimeImmutable $date_creation = null;
 
     /**
      * @var Collection<int, Avis>
@@ -81,6 +81,7 @@ class Film
         $this->avis = new ArrayCollection();
         $this->genres = new ArrayCollection();
         $this->seances = new ArrayCollection();
+        
     }
 
     public function getId(): ?int
@@ -148,16 +149,37 @@ class Film
         return $this;
     }
 
-    public function getPosterUrl(): ?string
+    public function getPosterPath(): ?string
     {
-        return $this->poster_url;
+    return $this->poster_url;
     }
 
+    /**
+    * Retourne l'URL complète du poster pour l'affichage
+    */
+    public function getPosterUrl(): ?string
+    {
+    if (!$this->poster_url) {
+        return null;
+    }
+    
+    // Si c'est déjà une URL complète, la retourner directement
+    if (str_starts_with($this->poster_url, 'http')) {
+        return $this->poster_url;
+    }
+    
+    // Sinon, construire l'URL TMDB
+    return 'https://image.tmdb.org/t/p/w500' . $this->poster_url;
+    }
+
+    /**
+    * Définit le chemin du poster
+    * Accepte soit un path (/abc123.jpg) soit une URL complète
+    */
     public function setPosterUrl(?string $poster_url): static
     {
-        $this->poster_url = $poster_url;
-
-        return $this;
+    $this->poster_url = $poster_url;
+    return $this;
     }
 
     public function getBackdropUrl(): ?string
@@ -244,12 +266,12 @@ class Film
         return $this;
     }
 
-    public function getDateCreation(): ?\DateTime
+    public function getDateCreation(): ?\DateTimeImmutable
     {
         return $this->date_creation;
     }
 
-    public function setDateCreation(\DateTime $date_creation): static
+    public function setDateCreation(\DateTimeImmutable $date_creation): static
     {
         $this->date_creation = $date_creation;
 

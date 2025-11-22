@@ -1,0 +1,596 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une séance{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    /* ========================================
+       🎬 CINEMIRA - Page Création Séance
+       Code couleur: #667eea → #764ba2
+    ======================================== */
+
+    .seance-page {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Effet particules/étoiles */
+    .seance-page::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(2px 2px at 20px 30px, rgba(102, 126, 234, 0.4), transparent),
+            radial-gradient(2px 2px at 40px 70px, rgba(118, 75, 162, 0.3), transparent),
+            radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.3), transparent),
+            radial-gradient(2px 2px at 130px 80px, rgba(102, 126, 234, 0.4), transparent),
+            radial-gradient(1px 1px at 160px 120px, rgba(118, 75, 162, 0.5), transparent);
+        background-size: 200px 200px;
+        animation: twinkle 5s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 1; }
+    }
+
+    /* Header de page */
+    .page-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 0 60px rgba(102, 126, 234, 0.5);
+        margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1.1rem;
+    }
+
+    /* Card principale */
+    .seance-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.4),
+            0 0 100px rgba(102, 126, 234, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Sections du formulaire */
+    .form-section {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(102, 126, 234, 0.15);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-section:hover {
+        border-color: rgba(102, 126, 234, 0.4);
+        box-shadow: 0 0 30px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 1rem;
+    }
+
+    .form-section-title .icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    /* Labels */
+    .form-label-pro {
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-label-pro .required {
+        color: #f093fb;
+        margin-left: 3px;
+    }
+
+    /* Inputs */
+    .form-control-pro {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(102, 126, 234, 0.3) !important;
+        border-radius: 12px !important;
+        color: #fff !important;
+        padding: 0.875rem 1rem !important;
+        font-size: 1rem !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .form-control-pro::placeholder {
+        color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+    .form-control-pro:focus {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2), 0 0 20px rgba(102, 126, 234, 0.3) !important;
+        outline: none !important;
+    }
+
+    /* Select */
+    .form-select-pro {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(102, 126, 234, 0.3) !important;
+        border-radius: 12px !important;
+        color: #fff !important;
+        padding: 0.875rem 1rem !important;
+        cursor: pointer;
+    }
+
+    .form-select-pro option {
+        background: #1a1a2e;
+        color: #fff;
+    }
+
+    /* ========================================
+       🔍 RECHERCHE TMDB
+    ======================================== */
+    .tmdb-search-wrapper {
+        position: relative;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+    }
+
+    .search-input-wrapper::before {
+        content: '🔍';
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.1rem;
+        z-index: 2;
+    }
+
+    .search-input-wrapper input {
+        padding-left: 45px !important;
+    }
+
+    #tmdb_results {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: linear-gradient(180deg, #9b9be7ff 0%, #3737e9ff 100%);
+        border: 1px solid rgba(102, 126, 234, 0.4);
+        border-radius: 16px;
+        margin-top: 8px;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 
+            0 20px 40px rgba(0, 0, 0, 0.5),
+            0 0 60px rgba(102, 126, 234, 0.2);
+    }
+
+    #tmdb_results::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #tmdb_results::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 3px;
+    }
+
+    #tmdb_results::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #667eea, #764ba2);
+        border-radius: 3px;
+    }
+
+    .tmdb-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+    }
+
+    .tmdb-item:last-child {
+        border-bottom: none;
+    }
+
+    .tmdb-item:hover {
+        background: linear-gradient(90deg, rgba(165, 178, 234, 0.2), rgba(236, 233, 239, 0.2));
+        transform: translateX(5px);
+    }
+
+    .tmdb-item img {
+        width: 50px;
+        height: 75px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .tmdb-item-info strong {
+        color: #fff;
+        font-size: 0.95rem;
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    .tmdb-item-info small {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Film sélectionné */
+    .selected-movie {
+        display: none;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+        border: 2px solid rgba(102, 126, 234, 0.5);
+        border-radius: 16px;
+        padding: 15px;
+        margin-top: 15px;
+        align-items: center;
+        gap: 15px;
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .selected-movie.show {
+        display: flex;
+    }
+
+    .selected-movie img {
+        width: 60px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .selected-movie-info {
+        flex: 1;
+    }
+
+    .selected-movie-info strong {
+        color: #fff;
+        font-size: 1.1rem;
+        display: block;
+    }
+
+    .selected-movie-info small {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .selected-movie .badge-selected {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .remove-btn {
+        background: rgba(220, 53, 69, 0.2);
+        border: 1px solid rgba(220, 53, 69, 0.4);
+        color: #ff6b6b;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .remove-btn:hover {
+        background: rgba(220, 53, 69, 0.4);
+        transform: scale(1.1);
+    }
+
+    /* ========================================
+       🔘 BOUTONS
+    ======================================== */
+    .btn-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(102, 126, 234, 0.2);
+    }
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-back:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.4);
+        color: #fff;
+        transform: translateX(-5px);
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: #fff;
+        padding: 14px 32px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    /* Grid pour les champs */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .btn-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn-back, .btn-submit {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* Cacher le champ tmdb_id */
+    #seance_tmdb_id {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="seance-page">
+    <div class="container">
+        
+        <!-- Header -->
+        <div class="page-header">
+            <h1>🎬 Nouvelle Séance</h1>
+            <p>Programmez une projection pour votre cinéma</p>
+        </div>
+
+        <!-- Card Formulaire -->
+        <div class="seance-card">
+            {{ form_start(form, {'attr': {'class': 'seance-form'}}) }}
+
+            <!-- Section: Recherche Film -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <span class="icon">🎬</span>
+                    <span>Sélection du film</span>
+                </div>
+
+                <div class="tmdb-search-wrapper">
+                    <label class="form-label-pro">
+                        Rechercher un film <span class="required">*</span>
+                    </label>
+                    <div class="search-input-wrapper">
+                        <input 
+                            type="text" 
+                            id="tmdb_search" 
+                            class="form-control form-control-pro"
+                            placeholder="Tapez le titre du film…"
+                            autocomplete="off"
+                        >
+                    </div>
+                    <div id="tmdb_results"></div>
+
+                    <!-- Film sélectionné -->
+                    <div id="selected_movie" class="selected-movie">
+                        <img id="selected_poster" src="" alt="">
+                        <div class="selected-movie-info">
+                            <span class="badge-selected">✓ Sélectionné</span>
+                            <strong id="selected_title"></strong>
+                            <small id="selected_year"></small>
+                        </div>
+                        <button type="button" class="remove-btn" id="remove_movie" title="Retirer">✕</button>
+                    </div>
+                </div>
+
+                <!-- Champ caché TMDB ID -->
+                {{ form_widget(form.tmdb_id, {'id': 'seance_tmdb_id'}) }}
+            </div>
+
+            <!-- Section: Date & Heure -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <span class="icon">📅</span>
+                    <span>Date et horaire</span>
+                </div>
+
+                <label class="form-label-pro">
+                    Date et heure de la séance <span class="required">*</span>
+                </label>
+                {{ form_widget(form.date_seance, {'attr': {'class': 'form-control form-control-pro'}}) }}
+                {{ form_errors(form.date_seance) }}
+            </div>
+
+            <!-- Section: Détails de la séance -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <span class="icon">⚙️</span>
+                    <span>Détails de la séance</span>
+                </div>
+
+                <div class="form-grid">
+                    <!-- Heure de début -->
+                    {% if form.heure_debut is defined %}
+                    <div>
+                        <label class="form-label-pro">Heure de début <span class="required">*</span></label>
+                        {{ form_widget(form.heure_debut, {'attr': {'class': 'form-control form-control-pro', 'type': 'time'}}) }}
+                    </div>
+                    {% else %}
+                    <div>
+                        <label class="form-label-pro">Heure de début <span class="required">*</span></label>
+                        <input type="time" name="heure_debut" class="form-control form-control-pro" required>
+                    </div>
+                    {% endif %}
+
+                    <!-- Prix de base -->
+                    <div>
+                        <label class="form-label-pro">Prix de base (€) <span class="required">*</span></label>
+                        {{ form_widget(form.prix_base, {'attr': {'class': 'form-control form-control-pro', 'placeholder': '9.50'}}) }}
+                    </div>
+
+                    {% if form.version is defined %}
+                    <div>
+                        <label class="form-label-pro">Version</label>
+                        {{ form_widget(form.version, {'attr': {'class': 'form-control form-select-pro'}}) }}
+                    </div>
+                    {% endif %}
+
+                    {% if form.salle is defined %}
+                    <div>
+                        <label class="form-label-pro">Salle</label>
+                        {{ form_widget(form.salle, {'attr': {'class': 'form-control form-select-pro'}}) }}
+                    </div>
+                    {% endif %}
+
+                    {% if form.format is defined %}
+                    <div>
+                        <label class="form-label-pro">Format</label>
+                        {{ form_widget(form.format, {'attr': {'class': 'form-control form-select-pro'}}) }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Boutons -->
+            <div class="btn-actions">
+                <a href="{{ path('app_admin_seance_index') }}" class="btn-back">
+                    <span>←</span> Retour à la liste
+                </a>
+                <button type="submit" class="btn-submit">
+                    <span>💾</span> Créer la séance
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+            <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const resultsDiv = document.getElementById("tmdb_results");
+                const searchInput = document.getElementById("tmdb_search");
+                const selectedMovieBlock = document.getElementById("selected_movie");
+                const removeBtn = document.getElementById("remove_movie");
+
+                /** 🔹 Ferme la liste quand tu cliques sur un film */
+                document.addEventListener("click", function (e) {
+                    if (!resultsDiv.contains(e.target) && e.target !== searchInput) {
+                        resultsDiv.style.display = "none";
+                    }
+                });
+
+                /** 🔹 Quand un film est cliqué → replie le menu */
+                resultsDiv.addEventListener("click", function (e) {
+                    const item = e.target.closest(".tmdb-item");
+                    if (!item) return;
+
+                    resultsDiv.style.display = "none";  // <<< FERMETURE ICI
+                });
+
+                /** 🔹 Bouton retirer */
+                if (removeBtn) {
+                    removeBtn.addEventListener("click", () => {
+                        selectedMovieBlock.classList.remove("show");
+                        document.getElementById("seance_tmdb_id").value = "";
+                        searchInput.value = "";
+                    });
+                }
+            });
+            </script>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

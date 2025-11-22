@@ -350,13 +350,13 @@
             <div class="quick-link-icon">🏢</div>
             <div class="quick-link-text">Gérer les salles</div>
         </a>
+        <a href="{{ path('app_admin_seance_index') }}" class="quick-link">
+            <div class="quick-link-icon">🎥</div>
+            <div class="quick-link-text">Gérer les séances</div>
+        </a>
         <a href="{{ path('app_actu_index') }}" class="quick-link">
             <div class="quick-link-icon">🎞️</div>
             <div class="quick-link-text">Films à l'affiche</div>
-        </a>
-        <a href="{{ path('app_logout') }}" class="quick-link">
-            <div class="quick-link-icon">🚪</div>
-            <div class="quick-link-text">Déconnexion</div>
         </a>
     </div>
 
@@ -384,7 +384,7 @@
             <div class="action-card">
                 <h3>🎫 Nouvelle Séance</h3>
                 <p>Programmez une nouvelle séance pour un film et définissez les horaires de projection.</p>
-                <a href="#" class="btn-action">
+                <a href="{{ path('app_admin_seance_new') }}" class="btn-action">
                     ➕ Créer une séance
                 </a>
             </div>
