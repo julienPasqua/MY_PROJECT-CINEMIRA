@@ -11,6 +11,9 @@
  *
  * The "importmap:require" command can be used to add new entries to this file.
  */
+
+
+
 return [
     'app' => [
         'path' => './assets/app.js',
@@ -19,12 +22,13 @@ return [
     'app.css' => [
         'path' => './assets/styles/app.css',
         'entrypoint' => true,
-    ],
-    '@hotwired/stimulus' => [
-        'version' => '3.2.2',
+        'type' => 'css',
     ],
     '@symfony/stimulus-bundle' => [
         'path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js',
+    ],
+    '@hotwired/stimulus' => [
+        'version' => '3.2.2',
     ],
     '@hotwired/turbo' => [
         'version' => '7.3.0',
@@ -34,9 +38,5 @@ return [
     ],
     '@popperjs/core' => [
         'version' => '2.11.8',
-    ],
-    'bootstrap/dist/css/bootstrap.min.css' => [
-        'version' => '5.3.8',
-        'type' => 'css',
     ],
 ];

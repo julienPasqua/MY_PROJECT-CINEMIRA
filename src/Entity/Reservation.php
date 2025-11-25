@@ -6,6 +6,8 @@ use App\Enum\ReservationStatus;
 use App\Repository\ReservationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 class Reservation
@@ -41,6 +43,11 @@ class Reservation
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Utilisateur $utilisateur = null;
+
+    #[ORM\ManyToMany(targetEntity: Siege::class)]
+    #[ORM\JoinTable(name: 'reservation_siege')]
+    private Collection $sieges;
+
 
     public function getId(): ?int
     {
@@ -137,4 +144,37 @@ class Reservation
 
         return $this;
     }
+
+        public function __construct()
+    {
+        $this->sieges = new ArrayCollection();
+    }
+
+    public function getSieges(): Collection
+    {
+        return $this->sieges;
+    }
+
+    public function addSiege(Siege $siege): static
+    {
+        if (!$this->sieges->contains($siege)) {
+            $this->sieges->add($siege);
+        }
+        return $this;
+    }
+
+    public function removeSiege(Siege $siege): static
+    {
+        $this->sieges->removeElement($siege);
+        return $this;
+    }
+
+
+
+
+
+
+
+
 }
+

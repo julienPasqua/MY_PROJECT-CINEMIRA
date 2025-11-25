@@ -1,342 +1,113 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ film.titre }} - Réservation{% endblock %}
-
-{% block stylesheets %}
-<style>
-    .film-hero {
-        position: relative;
-        height: 500px;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-
-    .film-hero::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.9));
-    }
-
-    .film-hero-content {
-        position: relative;
-        z-index: 1;
-        color: white;
-        padding: 40px 0;
-        height: 100%;
-        display: flex;
-        align-items: flex-end;
-    }
-
-    .film-poster {
-        width: 200px;
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    .film-meta {
-        display: flex;
-        gap: 20px;
-        margin: 20px 0;
-        flex-wrap: wrap;
-    }
-
-    .meta-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(255,255,255,0.1);
-        padding: 8px 15px;
-        border-radius: 20px;
-        font-size: 0.9em;
-    }
-
-    .rating-badge {
-        background: linear-gradient(135deg, #ffd700, #ffed4e);
-        color: #000;
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-size: 1.2em;
-        font-weight: bold;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .seances-section {
-        margin-top: 40px;
-    }
-
-    .seance-card {
-        background: white;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 15px;
-        transition: all 0.3s ease;
-    }
-
-    .seance-card:hover {
-        border-color: #007bff;
-        box-shadow: 0 5px 15px rgba(0,123,255,0.2);
-        transform: translateY(-2px);
-    }
-
-    .seance-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-
-    .cinema-name {
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .seance-details {
-        display: flex;
-        gap: 30px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-
-    .seance-info {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: #666;
-    }
-
-    .version-badge {
-        background: #007bff;
-        color: white;
-        padding: 5px 12px;
-        border-radius: 5px;
-        font-size: 0.85em;
-        font-weight: bold;
-    }
-
-    .format-badge {
-        background: #28a745;
-        color: white;
-        padding: 5px 12px;
-        border-radius: 5px;
-        font-size: 0.85em;
-        font-weight: bold;
-    }
-
-    .price-tag {
-        font-size: 1.3em;
-        font-weight: bold;
-        color: #28a745;
-    }
-
-    .btn-reserver {
-        padding: 12px 30px;
-        font-size: 1.1em;
-        border-radius: 8px;
-        font-weight: bold;
-        transition: all 0.3s ease;
-    }
-
-    .btn-reserver:hover {
-        transform: scale(1.05);
-        box-shadow: 0 5px 15px rgba(0,123,255,0.3);
-    }
-
-    .avis-section {
-        margin-top: 40px;
-    }
-
-    .avis-card {
-        background: #f8f9fa;
-        border-left: 4px solid #007bff;
-        padding: 20px;
-        margin-bottom: 15px;
-        border-radius: 5px;
-    }
-
-    .avis-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-
-    .avis-author {
-        font-weight: bold;
-        color: #333;
-    }
-
-    .avis-rating {
-        color: #ffd700;
-        font-weight: bold;
-    }
-
-    .no-seances {
-        text-align: center;
-        padding: 40px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        color: #666;
-    }
-</style>
-{% endblock %}
+{% block title %} - CineMira{% endblock %}
 
 {% block body %}
-    {# Hero Section avec backdrop #}
-    <div class="film-hero" style="background-image: url('{{ film.backdropUrl ?? film.posterUrl }}')">
-        <div class="container film-hero-content">
-            <div class="row align-items-end w-100">
-                <div class="col-md-3">
-                    <img src="{{ film.posterUrl }}" alt="{{ film.titre }}" class="film-poster img-fluid">
-                </div>
-                <div class="col-md-9">
-                    <h1 class="display-4 mb-3">{{ film.titre }}</h1>
-                    
-                    <div class="film-meta">
-                        {% if film.noteMoyenne %}
-                            <span class="rating-badge">
-                                ⭐ {{ film.noteMoyenne|number_format(1) }}/10
-                            </span>
-                        {% endif %}
-                        
-                        {% if film.duree %}
-                            <span class="meta-item">
-                                🕐 {{ film.duree }} min
-                            </span>
-                        {% endif %}
-                        
-                        {% if film.dateSortie %}
-                            <span class="meta-item">
-                                📅 {{ film.dateSortie|date('Y') }}
-                            </span>
-                        {% endif %}
-                        
-                        {% if film.classification %}
-                            <span class="meta-item">
-                                🔞 {{ film.classification }}
-                            </span>
-                        {% endif %}
-                    </div>
 
-                    <div class="genres mt-3">
-                        {% for genre in film.genres %}
-                            <span class="badge bg-secondary me-2">{{ genre.nom }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
+<div class="container mt-4">
+
+    {# ==========================
+       HEADER AVEC BACKDROP + POSTER
+       ========================== #}
+    <div class="position-relative mb-5">
+        <div class="rounded shadow" 
+             style="
+                background-image: url('https://image.tmdb.org/t/p/original{{ film.backdropUrl }}');
+                background-size: cover;
+                background-position: center;
+                height: 380px;
+             ">
+        </div>
+
+        <div class="position-absolute" style="bottom: -60px; left: 40px;">
+            <img src="https://image.tmdb.org/t/p/w300{{ film.posterUrl }}" 
+                 alt="{{ film.titre }}" 
+                 class="rounded shadow-lg"
+                 style="width: 180px;">
         </div>
     </div>
 
-    {# Contenu principal #}
-    <div class="container mt-5">
-        {# Synopsis #}
-        <div class="row">
-            <div class="col-md-8">
-                <h2>📖 Synopsis</h2>
-                <p class="lead">{{ film.synopsis ?? 'Synopsis non disponible.' }}</p>
+    <div class="mt-5">
 
-                {% if film.realisateur %}
-                    <p><strong>🎬 Réalisateur :</strong> {{ film.realisateur }}</p>
-                {% endif %}
+        {# ==========================
+           TITRE + ANNÉE + BOUTON
+           ========================== #}
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            
+            <div>
+                {# <h1 class="fw-bold">{{ film.titre }}</h1> #}
 
-                {% if film.acteurPrincipaux is not empty %}
-                    <p><strong>🎭 Acteurs principaux :</strong> {{ film.acteurPrincipaux|join(', ') }}</p>
+                {% if film.dateSortie %}
+                    <span class="badge bg-dark">
+                        📅 {{ film.dateSortie|date('Y') }}
+                    </span>
                 {% endif %}
             </div>
 
-            {# Sidebar #}
-            <div class="col-md-4">
-                {% if film.bandeAnnonceUrl %}
-                    <h4>🎥 Bande-annonce</h4>
-                    <div class="ratio ratio-16x9 mb-3">
-                        <iframe src="{{ film.bandeAnnonceUrl }}" allowfullscreen></iframe>
-                    </div>
-                {% endif %}
+            {# ⭐ Bouton vers choix cinéma #}
+            <a href="{{ path('app_reservation_cinema', { tmdbId: tmdbId }) }}" 
+               class="btn btn-danger btn-lg px-4 py-2"
+               style="border-radius: 12px; font-weight: 600;">
+               🎟️ Voir les séances / Choisir mon cinéma
+            </a>
+        </div>
 
-                <h4>ℹ️ Informations</h4>
-                <ul class="list-unstyled">
-                    {% if film.langueOriginale %}
-                        <li><strong>Langue :</strong> {{ film.langueOriginale|upper }}</li>
-                    {% endif %}
-                    {% if film.dateCreation %}
-                        <li><strong>Ajouté le :</strong> {{ film.dateCreation|date('d/m/Y') }}</li>
+        <hr>
+
+        {# ==========================
+           SYNOPSIS + INFORMATIONS
+           ========================== #}
+        <div class="row mt-4">
+            
+            <div class="col-md-8">
+                <h3 class="mb-3">📖 Synopsis</h3>
+                <p style="font-size: 1.1rem;">
+                    {{ film.synopsis ?: 'Aucun synopsis disponible.' }}
+                </p>
+            </div>
+
+            <div class="col-md-4">
+                <h3 class="mb-3">ℹ️ Informations</h3>
+                <ul class="list-unstyled fs-6">
+
+                    <li><strong>Ajouté le :</strong> {{ film.dateSortie|date('Y') }}</li>
+                    <li><strong>TMDB ID :</strong> {{ film.tmdbId }}</li>
+
+                    {% if film.genres|length > 0 %}
+                        <li>
+                            <strong>Genres :</strong> 
+                            {{ film.genres|map(g => g.nom)|join(', ') }}
+                        </li>
                     {% endif %}
                 </ul>
             </div>
+
         </div>
 
-        {# Séances disponibles #}
-        <div class="seances-section" id="seances">
-            <h2>🎫 Séances disponibles</h2>
+        <hr>
 
-            {% if seances is empty %}
-                <div class="no-seances">
-                    <h4>😔 Aucune séance programmée</h4>
-                    <p>Ce film n'a pas encore de séance planifiée. Revenez bientôt !</p>
-                </div>
-            {% else %}
-                {% for seance in seances %}
-                    <div class="seance-card">
-                        <div class="seance-header">
-                            <div>
-                                <div class="cinema-name">
-                                    📍 {{ seance.salle.cinema.nom }}
-                                </div>
-                                <small class="text-muted">{{ seance.salle.cinema.ville }} - Salle {{ seance.salle.nom }}</small>
-                            </div>
-                            <a href="{{ path('app_reservation_sieges', {seanceId: seance.id}) }}" 
-                               class="btn btn-primary btn-reserver">
-                                💺 Réserver
-                            </a>
-                        </div>
+        {# ==========================
+           AVIS DES UTILISATEURS
+           ========================== #}
+        <h3 class="mt-5 mb-3">⭐ Avis des spectateurs</h3>
 
-                        <div class="seance-details">
-                            <div class="seance-info">
-                                <strong>📅</strong> {{ seance.dateSeance|date('l d F Y') }}
-                            </div>
-                            <div class="seance-info">
-                                <strong>🕐</strong> {{ seance.heureDebut|date('H:i') }} - {{ seance.heureFin|date('H:i') }}
-                            </div>
-                            <span class="version-badge">{{ seance.version }}</span>
-                            {% if seance.format %}
-                                <span class="format-badge">{{ seance.format }}</span>
-                            {% endif %}
-                            <div class="price-tag ms-auto">
-                                💰 {{ seance.prixBase|number_format(2) }}€
-                            </div>
-                        </div>
+        {% if avis is empty %}
+            <p>Aucun avis pour le moment.</p>
+        {% else %}
+            <div class="list-group mb-4">
+                {% for a in avis %}
+                    <div class="list-group-item">
+                        <strong>{{ a.utilisateur.email }}</strong>
+                        <span class="badge bg-warning text-dark ms-2">
+                            {{ a.note }}/5
+                        </span>
+                        <p class="mt-2">{{ a.commentaire }}</p>
                     </div>
                 {% endfor %}
-            {% endif %}
-        </div>
-
-        {# Avis #}
-        {% if avis is not empty %}
-            <div class="avis-section">
-                <h2>⭐ Derniers avis</h2>
-                {% for avis in avis %}
-                    <div class="avis-card">
-                        <div class="avis-header">
-                            <span class="avis-author">👤 {{ avis.utilisateur.username }}</span>
-                            <span class="avis-rating">{{ avis.note }}/10 ⭐</span>
-                        </div>
-                        <p>{{ avis.contenu }}</p>
-                        <small class="text-muted">{{ avis.dateCreation|date('d/m/Y à H:i') }}</small>
-                    </div>
-                {% endfor %}
-
-                <a href="{{ path('app_film_avis', {id: film.id}) }}" class="btn btn-outline-primary">
-                    Voir tous les avis ({{ film.avis|length }})
-                </a>
             </div>
         {% endif %}
+
     </div>
+</div>
+
 {% endblock %}

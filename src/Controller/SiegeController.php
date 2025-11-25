@@ -10,6 +10,7 @@ use App\Form\GenerateSiegesType;
 use App\Repository\SiegeRepository;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Util\Test;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,13 +43,18 @@ class SiegeController extends AbstractController
         $siege = new Siege();
         $form = $this->createForm(SiegeType::class, $siege);
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
+
+            
             $em->persist($siege);
             $em->flush();
 
             $this->addFlash('success', 'Siège créé avec succès !');
             return $this->redirectToRoute('app_admin_siege_index');
+        }
+        else{
+            // dd($form->getErrors(true));
         }
 
         return $this->render('admin/siege/new.html.twig', [

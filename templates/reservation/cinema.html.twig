@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Choisir un cinéma{% endblock %}
+
+{% block stylesheets %}
+<style>
+    body {
+        background: radial-gradient(circle at 50% 50%, #96cdff 0%, #469cf9 50%, #006ed4 100%);
+        font-family: 'Futura', sans-serif;
+        color: white;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+        font-size: 2.6rem;
+        font-weight: 800;
+        color: #ffd700;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .film-poster {
+        width: 140px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+
+    .cinema-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .cinema-card {
+        background: rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 20px;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        transition: 0.3s ease;
+    }
+
+    .cinema-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255,255,255,0.18);
+    }
+
+    .cinema-name {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #ffd700;
+        margin-bottom: 5px;
+    }
+
+    .cinema-city {
+        opacity: 0.9;
+    }
+
+    .btn-select {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 10px 18px;
+        background: linear-gradient(135deg, #ffc107, #ff9800);
+        border-radius: 10px;
+        font-weight: bold;
+        color: black;
+        text-decoration: none;
+        transition: 0.3s ease;
+    }
+
+    .btn-select:hover {
+        background: linear-gradient(135deg, #ff9800, #f57c00);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(255,193,7,0.4);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    {# HEADER #}
+    <div class="page-header">
+        <h1>🎬 Choisissez votre cinéma</h1>
+
+        {# AFFICHE DU FILM (optional) #}
+        {% if film is defined %}
+            <img src="https://image.tmdb.org/t/p/w300{{ film.posterUrl }}" 
+                 class="film-poster mb-3" 
+                 alt="{{ film.titre }}">
+            <h3 class="mt-1">{{ film.titre }}</h3>
+        {% endif %}
+    </div>
+
+    {# MESSAGE SI PAS DE CINEMA #}
+    {% if cinemas is empty %}
+        <div class="alert alert-warning text-center">
+            Aucun cinéma ne diffuse ce film pour le moment.
+        </div>
+
+    {% else %}
+
+        <div class="cinema-grid">
+
+            {% for cinema in cinemas %}
+                <div class="cinema-card">
+
+                    <div class="cinema-name">{{ cinema.nom }}</div>
+                    <div class="cinema-city">{{ cinema.ville ?? "Ville inconnue" }}</div>
+
+                    <a href="{{ path('app_reservation_seances', {
+                        tmdbId: tmdbId,
+                        cinemaId: cinema.id
+                    }) }}" class="btn-select">
+                        Voir les séances →
+                    </a>
+
+                </div>
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

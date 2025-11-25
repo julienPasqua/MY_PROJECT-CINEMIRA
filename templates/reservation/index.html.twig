@@ -1,20 +1,143 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ReservationController!{% endblock %}
+{% block title %}Mes réservations{% endblock %}
+
+{% block stylesheets %}
+<style>
+.page-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 35px;
+    color: #ffd700;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+.resa-card {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    border-radius: 18px;
+    padding: 20px;
+    color: #fff;
+    display: flex;
+    gap: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    margin-bottom: 20px;
+}
+
+.resa-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+}
+
+.resa-poster {
+    width: 110px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.resa-info-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #ffd700;
+}
+
+.resa-meta {
+    opacity: 0.85;
+    font-size: 0.95rem;
+}
+
+.resa-actions {
+    margin-top: 12px;
+}
+
+.btn-details {
+    background: #ffd700;
+    color: #000;
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.btn-details:hover {
+    background: #e6be00;
+}
+
+.btn-cancel {
+    background: #ff4545;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #d63b3b;
+}
+
+.empty-message {
+    text-align: center;
+    font-size: 1.3rem;
+    opacity: 0.85;
+    margin-top: 40px;
+}
+</style>
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+<h1 class="page-title">🎟️ Mes réservations</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/julienpasqua/my_project/src/Controller/ReservationController.php</code></li>
-        <li>Your template at <code>/Users/julienpasqua/my_project/templates/reservation/index.html.twig</code></li>
-    </ul>
-</div>
+{% if reservations is empty %}
+    <p class="empty-message">Vous n'avez encore aucune réservation.</p>
+{% endif %}
+
+{% for resa in reservations %}
+
+    <div class="resa-card">
+
+        {# Poster TMDB #}
+        <img src="{{ resa.seance.film.posterUrl }}" class="resa-poster">
+
+        <div style="flex: 1;">
+
+            <div class="resa-info-title">
+                {{ resa.seance.film.titre }}
+            </div>
+
+            <div class="resa-meta">
+                🎬 Cinéma : {{ resa.seance.salle.cinema.nom }} <br>
+                📅 Séance : {{ resa.seance.dateSeance|date('d/m/Y') }}  
+                ⏰ {{ resa.seance.heureDebut|date('H:i') }} <br>
+                💺 Places : {{ resa.nombresPlaces }} <br>
+                💲 Total : {{ resa.prixTotal }} €
+            </div>
+
+            <div class="resa-actions">
+                <a href="{{ path('app_reservation_show', { id: resa.id }) }}" class="btn-details">
+                    🔍 Détails
+                </a>
+
+                {% if resa.statut != 'annulee' %}
+                <form method="post"
+                      action="{{ path('app_reservation_cancel', { id: resa.id }) }}"
+                      style="display:inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('cancel_resa_' ~ resa.id) }}">
+                    <button class="btn-cancel" onclick="return confirm('Annuler cette réservation ?')">
+                        ❌ Annuler
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+{% endfor %}
+
 {% endblock %}

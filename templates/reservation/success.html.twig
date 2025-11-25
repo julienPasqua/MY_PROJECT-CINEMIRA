@@ -1,0 +1,117 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réservation confirmée !{% endblock %}
+
+{% block stylesheets %}
+<style>
+    body {
+        background: radial-gradient(circle at 50% 50%, #96cdff 0%, #469cf9 50%, #006ed4 100%);
+        font-family: 'Futura', sans-serif;
+        color: white;
+    }
+
+    .success-box {
+        background: rgba(255,255,255,0.12);
+        padding: 30px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        max-width: 700px;
+        margin: 50px auto;
+        text-align: center;
+        box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+    }
+
+    .success-icon {
+        font-size: 4rem;
+        margin-bottom: 15px;
+        color: #ffd700;
+        text-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    }
+
+    .movie-title {
+        font-size: 1.7rem;
+        font-weight: 700;
+        color: #ffd700;
+        margin-bottom: 10px;
+    }
+
+    .info {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .btn-ticket {
+        background: linear-gradient(135deg, #ffd700, #ff9800);
+        color: black;
+        font-weight: bold;
+        border-radius: 10px;
+        padding: 12px 25px;
+        margin-top: 25px;
+        display: inline-block;
+        text-decoration: none;
+        font-size: 1.2rem;
+        transition: 0.3s;
+    }
+
+    .btn-ticket:hover {
+        background: linear-gradient(135deg, #ff9800, #f57c00);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(255,193,7,0.4);
+    }
+
+    .btn-home {
+        background: transparent;
+        border: 2px solid white;
+        border-radius: 10px;
+        padding: 10px 22px;
+        font-size: 1rem;
+        margin-top: 15px;
+        text-decoration: none;
+        color: white;
+        transition: 0.3s;
+        display: inline-block;
+    }
+
+    .btn-home:hover {
+        background: rgba(255,255,255,0.15);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="success-box">
+
+    <div class="success-icon">🎉</div>
+
+    <h1>Votre réservation est confirmée !</h1>
+
+    <p class="movie-title">{{ reservation.seance.film.titre }}</p>
+
+    <p class="info">📍 Cinéma : <strong>{{ reservation.seance.salle.cinema.nom }}</strong></p>
+    <p class="info">🕒 Séance : 
+        <strong>{{ reservation.seance.dateSeance|date('d/m/Y') }} 
+        à {{ reservation.seance.heureDebut|date('H:i') }}</strong>
+    </p>
+
+    <p class="info">💺 Places :</p>
+    <p>
+        {% for s in reservation.sieges %}
+            🔸 Rangée {{ s.numeroRangee }} — Place {{ s.numeroPlace }}<br>
+        {% endfor %}
+    </p>
+
+    <p class="info" style="font-size:1.4rem;">
+        💰 Total payé : <strong>{{ reservation.prixTotal }} €</strong>
+    </p>
+
+    <a href="{{ asset('pdf/ticket_' ~ reservation.id ~ '.pdf') }}" 
+       class="btn-ticket" download>
+        📥 Télécharger mon ticket PDF
+    </a>
+
+    <br>
+
+    <a href="{{ path('home.index') }}" class="btn-home">← Retour à l'accueil</a>
+
+</div>
+{% endblock %}

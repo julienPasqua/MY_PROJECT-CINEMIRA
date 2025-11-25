@@ -1,10 +1,11 @@
+import "./stimulus_bootstrap.js";
 import "./bootstrap.js";
 import "./styles/app.css";
 
 console.log("🎬 CineMira JS chargé !");
 
 // ============================================================================
-// 🎬 PARTIE 1 — Recherche TMDB dans /actu (NE PAS TOUCHER) 
+// 🎬 PARTIE 1 — Recherche TMDB dans /actu (NE PAS TOUCHER)
 // ============================================================================
 function initSearch() {
     console.log("🔍 Tentative d'initialisation...");
@@ -121,7 +122,6 @@ if (document.readyState === "loading") {
 
 document.addEventListener("turbo:load", initSearch);
 
-
 // ============================================================================
 // 🎬 PARTIE 2 — Recherche TMDB dans admin/seance/new (AMÉLIORÉE + FIX FERMETURE)
 // ============================================================================
@@ -184,15 +184,17 @@ document.addEventListener("DOMContentLoaded", () => {
                             input.value = movie.title;
                             hiddenTmdbId.value = movie.id;
 
-                            document.getElementById("film_titre").value = movie.title;
+                            document.getElementById("film_titre").value =
+                                movie.title;
                             document.getElementById("film_annee").value =
                                 movie.release_date?.substring(0, 4) || "";
-                            document.getElementById("film_poster").value = movie.poster_path || "";
-                            document.getElementById("film_synopsis").value = movie.overview || "";
+                            document.getElementById("film_poster").value =
+                                movie.poster_path || "";
+                            document.getElementById("film_synopsis").value =
+                                movie.overview || "";
 
                             resultsBox.style.display = "none"; // 🔥 fermeture OK maintenant
                         });
-
 
                         resultsBox.appendChild(item);
                     });

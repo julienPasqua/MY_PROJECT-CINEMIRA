@@ -1,0 +1,135 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la réservation{% endblock %}
+
+{% block stylesheets %}
+<style>
+.show-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+.show-card {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    padding: 25px;
+    border-radius: 20px;
+    color: #fff;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+}
+
+.show-header {
+    display: flex;
+    gap: 25px;
+}
+
+.show-poster {
+    width: 200px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.show-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffd700;
+    margin-bottom: 8px;
+}
+
+.show-meta {
+    font-size: 1rem;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffd700;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+.seat-tag {
+    background: #ffd700;
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 10px;
+    display: inline-block;
+    font-weight: bold;
+    margin: 5px;
+}
+
+.status {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.status-confirmed { background: #28a745; }
+.status-cancelled { background: #dc3545; }
+
+.btn-back {
+    margin-top: 25px;
+    background: #ffd700;
+    padding: 10px 20px;
+    color: #000;
+    font-weight: bold;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-block;
+    transition: 0.2s;
+}
+
+.btn-back:hover {
+    background: #e6be00;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div class="show-wrapper">
+
+    <div class="show-card">
+
+        <div class="show-header">
+            <img src="{{ reservation.seance.film.posterUrl }}" class="show-poster">
+
+            <div>
+                <div class="show-title">{{ reservation.seance.film.titre }}</div>
+
+                <div class="show-meta">
+                    🎦 Cinéma : <strong>{{ reservation.seance.salle.cinema.nom }}</strong><br>
+                    🎬 Salle : {{ reservation.seance.salle.nom }}<br>
+                    📅 Date : {{ reservation.seance.dateSeance|date('d/m/Y') }}<br>
+                    ⏰ Heure : {{ reservation.seance.heureDebut|date('H:i') }}<br>
+                    💰 Prix total : <strong>{{ reservation.prixTotal }} €</strong><br>
+                    🔢 Nombre de places : {{ reservation.nombresPlaces }}<br>
+                    🧾 Code confirmation : <strong>{{ reservation.codeConfirmation }}</strong><br>
+                    📌 Statut :
+                    {% if reservation.statut == 'annulee' %}
+                        <span class="status status-cancelled">Annulée</span>
+                    {% else %}
+                        <span class="status status-confirmed">Confirmée</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <h3 class="section-title">🎟️ Vos sièges</h3>
+
+        {% for siege in reservation.sieges %}
+            <span class="seat-tag">
+                Rangée {{ siege.numeroRangee }} • Place {{ siege.numeroPlace }}
+            </span>
+        {% endfor %}
+
+        <a href="{{ path('app_reservation_index') }}" class="btn-back">⬅ Retour à mes réservations</a>
+
+    </div>
+
+</div>
+
+{% endblock %}

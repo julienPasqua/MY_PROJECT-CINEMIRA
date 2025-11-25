@@ -107,47 +107,47 @@ Vous pouvez l’utiliser, le modifier et le redistribuer librement.
 - [x] 🔗 Configuration des relations entre entités
 - [x] 📋 Formulaires de création et d'édition (Cinema, Salle)
 - [x] 🔄 Migrations de base de données
-- [ ] 🔌 Intégration de l'API TheMovieDB
-- [ ] 🎛️ Création des Controllers
-- [ ] 🔐 Système d'authentification (Login/Register)
-- [ ] 👨‍💼 Gestion des rôles (ROLE_USER, ROLE_ADMIN)
+- [x] 🔌 Intégration de l'API TheMovieDB
+- [x] 🎛️ Création des Controllers
+- [x] 🔐 Système d'authentification (Login/Register)
+- [x] 👨‍💼 Gestion des rôles (ROLE_USER, ROLE_ADMIN)
 
 ### 📅 Phase 3 : Frontend & Interface Utilisateur
 - [x] 🎨 Page d'accueil avec films populaires
 - [x] 🏆 Section "Film du Mois"
-- [ ] 🔍 Page de recherche de films
-- [ ] 📄 Page détails d'un film
-- [ ] 🗓️ Page sélection de séance
+- [x] 🔍 Page de recherche de films
+- [x] 📄 Page détails d'un film
+- [x] 🗓️ Page sélection de séance
 - [x] 💺 Plan de salle interactif (HTML/CSS/JS)
-- [ ] 🎟️ Page récapitulatif de réservation
-- [ ] ✅ Page confirmation de réservation
-- [ ] 👤 Espace utilisateur (mes réservations)
-- [ ] 📱 Responsive design (mobile/tablet)
+- [x] 🎟️ Page récapitulatif de réservation
+- [x] ✅ Page confirmation de réservation
+- [x] 👤 Espace utilisateur (mes réservations)
+- [x] 📱 Responsive design (mobile/tablet)
 
 ### 📅 Phase 4 : Fonctionnalités Avancées
-- [ ] 💳 Système de paiement (simulation ou Stripe)
+- [x] 💳 Système de paiement (simulation ou Stripe)
 - [ ] 📧 Envoi d'emails de confirmation
 - [ ] 🔔 Notifications et rappels de séance
 - [ ] ⭐ Système de notation et avis
-- [ ] 📊 Dashboard administrateur
+- [x] 📊 Dashboard administrateur
 - [ ] 📈 Statistiques (films les plus réservés, etc.)
 - [ ] 🎁 Système de tarifs (réduit, enfant, senior)
 - [ ] 🎫 Génération de QR codes pour les billets
 
 ### 📅 Phase 5 : Tests & Qualité
-- [ ] ✅ Tests unitaires (PHPUnit)
-- [ ] 🧪 Tests fonctionnels
-- [ ] 🔍 Validation des formulaires
-- [ ] 🐛 Correction des bugs
-- [ ] ⚡ Optimisation des performances
-- [ ] 🔒 Sécurité (validation OWASP)
+- [x] ✅ Tests unitaires (PHPUnit)
+- [x] 🧪 Tests fonctionnels
+- [x] 🔍 Validation des formulaires
+- [x] 🐛 Correction des bugs
+- [x] ⚡ Optimisation des performances
+- [x] 🔒 Sécurité (validation OWASP)
 
 ### 📅 Phase 6 : Déploiement
 - [ ] 🐳 Configuration Docker
 - [ ] 🔄 CI/CD avec GitHub Actions
 - [ ] 🌐 Déploiement en production
-- [ ] 📚 Documentation complète
-- [ ] 🎓 Préparation de la présentation UE1
+- [x] 📚 Documentation complète
+- [x] 🎓 Préparation de la présentation UE1
 ```
 
 ---

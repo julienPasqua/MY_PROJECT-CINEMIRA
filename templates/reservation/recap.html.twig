@@ -1,0 +1,141 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Récapitulatif de la réservation{% endblock %}
+
+{% block stylesheets %}
+<style>
+    body {
+        background: linear-gradient(135deg, #4a9eff, #0b63c5);
+        font-family: 'Futura', sans-serif;
+        color: #fff;
+    }
+
+    .recap-card {
+        background: rgba(255,255,255,0.12);
+        padding: 25px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .label {
+        font-weight: bold;
+        color: #ffd700;
+        font-size: 1.1rem;
+    }
+
+    .value {
+        font-size: 1.2rem;
+    }
+
+    .btn-confirm {
+        background: linear-gradient(90deg, #ffd700, #ffae00);
+        border: none;
+        color: #000;
+        font-weight: 700;
+        padding: 12px 28px;
+        border-radius: 12px;
+        font-size: 1.3rem;
+        width: 100%;
+        transition: 0.3s ease;
+    }
+
+    .btn-confirm:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(255,215,0,0.4);
+    }
+
+    .btn-back {
+        background: transparent;
+        border: 2px solid #fff;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-size: 1rem;
+        color: #fff;
+        transition: 0.3s;
+        width: 100%;
+    }
+
+    .btn-back:hover {
+        background: rgba(255,255,255,0.15);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5" style="max-width: 750px;">
+
+    <h1 class="text-center mb-4" style="font-weight:900; color:#ffd700;">
+        🎟️ Récapitulatif de votre réservation
+    </h1>
+
+    <div class="recap-card">
+
+        <p><span class="label">🎞 Film :</span>
+            <span class="value">{{ film.titre }}</span>
+        </p>
+
+        <p><span class="label">🎦 Cinéma :</span>
+            <span class="value">{{ cinema.nom }}</span>
+        </p>
+
+        <p><span class="label">🕒 Séance :</span>
+            <span class="value">
+                {{ seance.dateSeance|date('d/m/Y') }} à {{ seance.heureDebut|date('H:i') }}
+                — {{ seance.format }} / {{ seance.version }}
+            </span>
+        </p>
+
+        <p><span class="label">💺 Sièges sélectionnés :</span><br>
+            <span class="value">
+                {% for s in siegesChoisis %}
+                    🔸 Rangée {{ s.numeroRangee }} — Place {{ s.numeroPlace }} <br>
+                {% endfor %}
+            </span>
+        </p>
+
+        <hr>
+
+        <p><span class="label">💰 Total :</span>
+            <span class="value" style="font-size:1.5rem;">
+                {{ total }} €
+            </span>
+        </p>
+
+        <form  id="checkout-form" action="{{ path('app_payment_create') }}" method="POST">
+            <input type="hidden" name="seanceId" value="{{ seance.id }}">
+            <input type="hidden" name="sieges" value="{{ siegesIds|join(',') }}">
+
+            <button class="btn-confirm mt-4" type="submit">
+                💳 Procéder au paiement de {{ total }} €
+            </button>
+        </form>
+
+        <script src="https://js.stripe.com/v3/"></script>
+
+        <script>
+        document.getElementById("checkout-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const form = e.target;
+            const data = new FormData(form);
+
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: data
+            });
+
+            const session = await response.json();
+
+            if (!session.id) {
+                alert("Erreur avec Stripe");
+                console.error(session);
+                return;
+            }
+
+            const stripe = Stripe("{{ stripePublicKey }}");
+            stripe.redirectToCheckout({ sessionId: session.id });
+        });
+     </script>
+
+{% endblock %}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #fff;
+    color: #000;
+}
+
+.ticket-container {
+    border: 2px solid #222;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 600px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    color: #c62828;
+    font-size: 26px;
+    margin-bottom: 25px;
+}
+
+.section {
+    margin-bottom: 18px;
+    line-height: 1.6rem;
+}
+
+.label {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Petite ligne séparatrice */
+.separator {
+    border-bottom: 1px solid #999;
+    margin: 15px 0;
+}
+
+/* Style du pseudo-code barre */
+.barcode {
+    font-family: monospace;
+    font-size: 20px;
+    letter-spacing: 3px;
+    text-align: center;
+    margin-top: 25px;
+}
+</style>
+</head>
+<body>
+
+<div class="ticket-container">
+
+    <h1>🎟️ Ticket de Réservation</h1>
+
+    <div class="section">
+        <span class="label">Film :</span> {{ reservation.seance.film.titre }}<br>
+        <span class="label">Cinéma :</span> {{ reservation.seance.salle.cinema.nom }}
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="section">
+        <span class="label">Séance :</span><br>
+        📅 {{ reservation.seance.dateSeance|date('d/m/Y') }}  
+        🕒 {{ reservation.seance.heureDebut|date('H:i') }}<br><br>
+
+        <span class="label">Salle :</span> {{ reservation.seance.salle.nom }}<br>
+        <span class="label">Format :</span> {{ reservation.seance.format }}  
+        — {{ reservation.seance.version }}
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="section">
+        <span class="label">Places :</span><br>
+        {% for siege in reservation.sieges %}
+            • Rangée <strong>{{ siege.numeroRangee }}</strong> — Place <strong>{{ siege.numeroPlace }}</strong><br>
+        {% endfor %}
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="section">
+        <span class="label">Montant total :</span> {{ reservation.prixTotal }} €<br>
+        <span class="label">Code de confirmation :</span> {{ reservation.codeConfirmation }}
+    </div>
+
+    <div class="barcode">
+        ||| ||| | |||||| | | |||<br>
+        <strong>{{ reservation.codeConfirmation }}</strong>
+    </div>
+
+</div>
+
+</body>
+</html>

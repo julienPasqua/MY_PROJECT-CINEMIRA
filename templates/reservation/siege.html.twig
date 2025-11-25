@@ -1,0 +1,212 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Choix des sièges{% endblock %}
+
+{% block stylesheets %}
+<style>
+    body {
+        background: radial-gradient(circle at 50% 50%, #96cdff 0%, #469cf9 50%, #006ed4 100%);
+        font-family: 'Futura', sans-serif;
+        color: #fff;
+    }
+
+    .screen {
+        width: 100%;
+        height: 35px;
+        background: linear-gradient(90deg, #ffffff, #d7d7d7, #ffffff);
+        border-radius: 8px;
+        text-align: center;
+        line-height: 35px;
+        font-weight: 700;
+        color: #000;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .seating-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+        gap: 10px;
+        justify-items: center;
+        margin-bottom: 30px;
+    }
+
+    .seat {
+        width: 35px;
+        height: 35px;
+        border-radius: 6px;
+        border: 2px solid #fff;
+        cursor: pointer;
+        transition: 0.2s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: .9rem;
+        font-weight: bold;
+        user-select: none;
+        color: #fff;
+    }
+
+    .seat:hover { transform: scale(1.15); }
+
+    /* ────────── COULEURS DES SIÈGES ────────── */
+
+    /* NORMAL */
+    .seat.free { background: #2196f3; }
+
+    /* VIP */
+    .seat.vip { 
+        background: #ff9800;
+        border-color: #ffa726;
+        color: #000;
+    }
+
+    /* PMR */
+    .seat.pmr { 
+        background: #9c27b0;
+        border-color: #ba68c8;
+    }
+
+    /* Réservé */
+    .seat.reserved {
+        background: #e53935 !important;
+        border-color: #ff0000 !important;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .seat.selected {
+        background: #ffd700 !important;
+        border-color: #ffeb3b !important;
+        color: #000;
+        transform: scale(1.2);
+    }
+
+    /* ────────── LÉGENDE ────────── */
+    .legend {
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        margin-bottom: 20px;
+    }
+
+    .legend div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1rem;
+    }
+
+    .legend-box {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+    }
+
+    .continue-btn {
+        background: linear-gradient(135deg, #ffc107, #ff9800);
+        border: none;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        color: #000;
+        font-weight: bold;
+        cursor: pointer;
+        display: block;
+        margin: 20px auto 0;
+        transition: 0.4s ease;
+    }
+
+    .continue-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 12px rgba(255,193,7,0.4);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <h1 class="text-center mb-4" style="color: #ffd700; font-weight:900;">
+        🎟️ Choisissez votre siège
+    </h1>
+
+    <h3 class="text-center mb-3">
+        Séance du {{ seance.dateSeance|date('d/m/Y') }} – {{ seance.heureDebut|date('H:i') }}
+    </h3>
+
+    <div class="screen">ÉCRAN</div>
+
+    {# 🔹 Légende #}
+    <div class="legend">
+        <div><div class="legend-box" style="background:#2196f3;"></div> Normal</div>
+        <div><div class="legend-box" style="background:#ff9800;"></div> VIP</div>
+        <div><div class="legend-box" style="background:#9c27b0;"></div> PMR</div>
+        <div><div class="legend-box" style="background:#e53935;"></div> Réservé</div>
+        <div><div class="legend-box" style="background:#ffd700;"></div> Sélectionné</div>
+    </div>
+
+    {# 🔹 GRILLE DES SIÈGES #}
+    <div class="seating-grid">
+        {% for siege in sieges %}
+            {% set seatType = siege.type.value %}
+            {% set isReserved = siege.id in siegesReserves %}
+
+            <div
+                class="seat
+                    {% if isReserved %}
+                        reserved
+                    {% else %}
+                        {% if seatType == 'vip' %}
+                            vip
+                        {% elseif seatType == 'handicape' %}
+                            pmr
+                        {% else %}
+                            free
+                        {% endif %}
+                    {% endif %}"
+                data-id="{{ siege.id }}"
+                title="{{ seatType|capitalize }}"
+            >
+                {{ siege.numeroPlace }}
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <form data-turbo="false" method="POST" action="{{ path('app_reservation_recap') }}" id="seats-form">
+        <input type="hidden" name="seanceId" value="{{ seance.id }}">
+        <input type="hidden" name="sieges" id="sieges-input">
+        <button type="submit" class="continue-btn">Continuer →</button>
+    </form>
+
+</div>
+
+<script>
+    const seats = document.querySelectorAll('.seat:not(.reserved)');
+    const selectedSeats = new Set();
+    const input = document.getElementById('sieges-input');
+
+    seats.forEach(seat => {
+        seat.addEventListener('click', () => {
+
+            const id = seat.dataset.id;
+
+            if (seat.classList.contains('pmr')) {
+                alert("⚠️ Ce siège est réservé aux personnes à mobilité réduite (PMR).");
+                return;
+            }
+
+            if (selectedSeats.has(id)) {
+                selectedSeats.delete(id);
+                seat.classList.remove('selected');
+            } else {
+                selectedSeats.add(id);
+                seat.classList.add('selected');
+            }
+
+            input.value = Array.from(selectedSeats).join(',');
+        });
+    });
+</script>
+{% endblock %}

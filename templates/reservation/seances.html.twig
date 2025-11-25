@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Choisir une séance{% endblock %}
+
+{% block stylesheets %}
+<style>
+    body {
+        background: radial-gradient(circle at 50% 50%, #96cdff 0%, #469cf9 50%, #006ed4 100%);
+        font-family: 'Futura', sans-serif;
+        color: white;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+        font-size: 2.6rem;
+        font-weight: 800;
+        color: #ffd700;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .cinema-name {
+        font-size: 1.3rem;
+        opacity: 0.9;
+    }
+
+    .seance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+    }
+
+    .seance-card {
+        background: rgba(255,255,255,0.12);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        backdrop-filter: blur(5px);
+        transition: 0.3s ease;
+    }
+
+    .seance-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255,255,255,0.18);
+        box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+    }
+
+    .seance-date {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #ffd700;
+    }
+
+    .seance-time {
+        font-size: 1.6rem;
+        margin: 10px 0;
+        font-weight: bold;
+    }
+
+    .seance-info {
+        opacity: 0.85;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .btn-choose {
+        margin-top: 15px;
+        padding: 10px 15px;
+        background: linear-gradient(135deg, #ffc107, #ff9800);
+        border-radius: 10px;
+        color: black;
+        font-weight: bold;
+        text-decoration: none;
+        transition: 0.3s ease;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .btn-choose:hover {
+        background: linear-gradient(135deg, #ff9800, #f57c00);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(255,193,7,0.4);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <div class="page-header">
+        <h1>📅 Choisissez votre séance</h1>
+
+        {% if film is defined %}
+            <h3>{{ film.titre }}</h3>
+        {% endif %}
+
+        {% if cinema is defined %}
+            <div class="cinema-name">
+                Cinéma : <strong>{{ cinema.nom }}</strong>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if seances is empty %}
+        <div class="alert alert-warning text-center">
+            Aucune séance n'est disponible dans ce cinéma pour ce film.
+        </div>
+    {% else %}
+        <div class="seance-grid">
+            {% for seance in seances %}
+                <div class="seance-card">
+
+                    <div class="seance-date">
+                        {{ seance.dateSeance|date('d/m/Y') }}
+                    </div>
+
+                    <div class="seance-time">
+                        {{ seance.heureDebut|date('H:i') }}
+                    </div>
+
+                    <div class="seance-info">
+                        🎬 Version : {{ seance.version }} <br>
+                        🎥 Format : {{ seance.format }} <br>
+                        💰 Prix : {{ seance.prixBase }} €
+                    </div>
+
+                    <a href="{{ path('app_reservation_siege', { seanceId: seance.id }) }}"
+                       class="btn-choose">
+                        🎟️ Choisir cette séance
+                    </a>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
