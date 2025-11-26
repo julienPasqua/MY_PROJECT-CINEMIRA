@@ -5,7 +5,7 @@ import "./styles/app.css";
 console.log("🎬 CineMira JS chargé !");
 
 // ============================================================================
-// 🎬 PARTIE 1 — Recherche TMDB dans /actu (NE PAS TOUCHER)
+// 🎬 PARTIE 1 — Recherche TMDB dans la navbar
 // ============================================================================
 function initSearch() {
     console.log("🔍 Tentative d'initialisation...");
@@ -23,6 +23,7 @@ function initSearch() {
         return;
     }
 
+    // Supprime anciens écouteurs
     const newForm = form.cloneNode(true);
     form.parentNode.replaceChild(newForm, form);
     const newInput = newForm.querySelector("#searchInput");
@@ -30,11 +31,13 @@ function initSearch() {
 
     let timeout = null;
 
+    // Submit
     finalForm.addEventListener("submit", function (e) {
         e.preventDefault();
         searchMovies(newInput.value);
     });
 
+    // Input
     newInput.addEventListener("input", function () {
         const query = newInput.value.trim();
 
@@ -49,6 +52,7 @@ function initSearch() {
         }, 300);
     });
 
+    // Fonction fetch
     async function searchMovies(query) {
         if (!query || query.length < 2) {
             resultsDiv.innerHTML = "";
@@ -72,6 +76,7 @@ function initSearch() {
         }
     }
 
+    // Afficher résultats
     function displayResults(movies) {
         if (!movies.length) {
             resultsDiv.innerHTML =
@@ -114,18 +119,20 @@ function initSearch() {
     }
 }
 
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initSearch);
-} else {
+// === CORRECTION TURBO / DOMCONTENTLOADED ===
+// Empêche l'oubli d'initialisation sur certaines pages
+function fullInit() {
     initSearch();
 }
 
-document.addEventListener("turbo:load", initSearch);
+document.addEventListener("DOMContentLoaded", fullInit);
+document.addEventListener("turbo:load", fullInit);
+document.addEventListener("turbo:render", fullInit);
 
 // ============================================================================
-// 🎬 PARTIE 2 — Recherche TMDB dans admin/seance/new (AMÉLIORÉE + FIX FERMETURE)
+// 🎬 PARTIE 2 — Recherche TMDB dans admin/seance/new
 // ============================================================================
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("turbo:load", () => {
     const input = document.querySelector("#tmdb_search");
     const resultsBox = document.querySelector("#tmdb_results");
     const hiddenTmdbId = document.querySelector("#seance_tmdb_id");
@@ -133,11 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!input || !resultsBox) return;
 
     let timer = null;
-    let isSelecting = false; // 🟦 empêche la réouverture automatique
 
     input.addEventListener("input", () => {
-        if (isSelecting) return; // 🟦 ignore quand on vient de sélectionner un film
-
         const query = input.value.trim();
         clearTimeout(timer);
 
@@ -179,7 +183,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             </div>
                         `;
 
-                        // 🟦 CLIC SUR LE FILM
                         item.addEventListener("click", () => {
                             input.value = movie.title;
                             hiddenTmdbId.value = movie.id;
@@ -193,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             document.getElementById("film_synopsis").value =
                                 movie.overview || "";
 
-                            resultsBox.style.display = "none"; // 🔥 fermeture OK maintenant
+                            resultsBox.style.display = "none";
                         });
 
                         resultsBox.appendChild(item);

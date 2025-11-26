@@ -6,6 +6,8 @@ use App\Repository\FilmRepository;
 use App\Repository\AvisRepository;
 use App\Repository\GenreRepository;
 use App\Service\TmdbService;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -142,4 +144,29 @@ class FilmController extends AbstractController
             'films' => $films,
         ]);
     }
+
+    #[Route('/api/tmdb/search', name: 'api_tmdb_search')]
+    public function apiSearch(Request $request, TmdbService $tmdbService): JsonResponse
+    {
+        $query = $request->query->get('query', '');
+
+        if (strlen($query) < 2) {
+        return $this->json([]);
+        }
+
+        $results = $tmdbService->searchMovies($query);
+
+        $formatted = array_map(function ($movie) {
+        return [
+            'id'           => $movie['id'] ?? null,
+            'title'        => $movie['title'] ?? '',
+            'overview'     => $movie['overview'] ?? '',
+            'poster_path'  => $movie['poster_path'] ?? null,
+            'release_date' => $movie['release_date'] ?? null,
+        ];
+        }, $results ?? []);
+
+        return $this->json($formatted);
+    }
+
 }
