@@ -4,140 +4,98 @@ import "./styles/app.css";
 
 console.log("🎬 CineMira JS chargé !");
 
-// ============================================================================
-// 🎬 PARTIE 1 — Recherche TMDB dans la navbar
-// ============================================================================
-function initSearch() {
-    console.log("🔍 Tentative d'initialisation...");
+/* ============================================================================
+   🔵 PARTIE 1 — Recherche TMDB dans la NAVBAR (PUBLIC)
+   ============================================================================ */
 
+function initPublicSearch() {
     const form = document.getElementById("searchForm");
     const input = document.getElementById("searchInput");
-    const resultsDiv = document.getElementById("searchResults");
+    const results = document.getElementById("searchResults");
 
-    console.log("Form:", form);
-    console.log("Input:", input);
-    console.log("Results div:", resultsDiv);
-
-    if (!form || !input || !resultsDiv) {
-        console.log("⚠️ Éléments absents (normal si pas sur cette page)");
+    if (!form || !input || !results) {
+        console.log("⚠️ Composants PUBLIC non trouvés → page sans navbar recherche");
         return;
     }
 
-    // Supprime anciens écouteurs
-    const newForm = form.cloneNode(true);
-    form.parentNode.replaceChild(newForm, form);
-    const newInput = newForm.querySelector("#searchInput");
-    const finalForm = newForm;
+    console.log("🔵 Recherche PUBLIC TMDB ACTIVÉE");
 
-    let timeout = null;
+    let timer = null;
 
-    // Submit
-    finalForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        searchMovies(newInput.value);
-    });
+    form.addEventListener("submit", (e) => e.preventDefault());
 
-    // Input
-    newInput.addEventListener("input", function () {
-        const query = newInput.value.trim();
+    input.addEventListener("input", () => {
+        const query = input.value.trim();
+        clearTimeout(timer);
 
         if (query.length < 2) {
-            resultsDiv.innerHTML = "";
+            results.innerHTML = "";
             return;
         }
 
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            searchMovies(query);
+        timer = setTimeout(() => {
+            fetch(`/api/tmdb/search?query=${encodeURIComponent(query)}`)
+                .then((response) => response.json())
+                .then((movies) => showPublicResults(movies, results))
+                .catch((err) => {
+                    console.error("Erreur recherche PUBLIC TMDB :", err);
+                });
         }, 300);
     });
+}
 
-    // Fonction fetch
-    async function searchMovies(query) {
-        if (!query || query.length < 2) {
-            resultsDiv.innerHTML = "";
-            return;
-        }
-
-        resultsDiv.innerHTML =
-            '<div class="text-center mt-3"><div class="spinner-border" role="status"></div></div>';
-
-        try {
-            const url = `/api/tmdb/search?query=${encodeURIComponent(query)}`;
-            const response = await fetch(url);
-
-            if (!response.ok) throw new Error(response.status);
-
-            const movies = await response.json();
-            displayResults(movies);
-        } catch (error) {
-            resultsDiv.innerHTML =
-                '<div class="alert alert-danger mt-3">Erreur lors de la recherche</div>';
-        }
+function showPublicResults(movies, results) {
+    if (!movies || movies.length === 0) {
+        results.innerHTML =
+            "<div class='alert alert-info mt-2'>Aucun résultat</div>";
+        return;
     }
 
-    // Afficher résultats
-    function displayResults(movies) {
-        if (!movies.length) {
-            resultsDiv.innerHTML =
-                '<div class="alert alert-info mt-3">Aucun film trouvé</div>';
-            return;
-        }
+    let html = `<div class="list-group mt-2">`;
 
-        let html = '<div class="list-group mt-3">';
+    movies.forEach((movie) => {
+        const poster = movie.poster_path
+            ? `https://image.tmdb.org/t/p/w92${movie.poster_path}`
+            : "https://via.placeholder.com/92x138?text=No+Image";
 
-        movies.forEach((movie) => {
-            const title = movie.title || "Sans titre";
-            const overview = movie.overview || "Pas de description";
-            const posterPath = movie.poster_path
-                ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
-                : "";
+        html += `
+            <a class="list-group-item list-group-item-action d-flex align-items-start gap-3"
+               href="/film/tmdb/${movie.id}">
+                
+                <img src="${poster}" 
+                     class="rounded shadow-sm" 
+                     style="width:55px; height:auto">
 
-            html += `
-                <div class="list-group-item list-group-item-action">
-                    <div class="row">
-                        <div class="col-md-2">
-                            <img src="${posterPath}" class="img-fluid rounded">
-                        </div>
-                        <div class="col-md-10">
-                            <h5>${escapeHtml(title)}</h5>
-                            <p>${escapeHtml(overview.substring(0, 200))}...</p>
-                        </div>
-                    </div>
+                <div>
+                    <strong>${movie.title}</strong><br>
+                    <small>
+                        ${(movie.overview || "").substring(0, 90)}...
+                    </small>
                 </div>
-            `;
-        });
+            </a>
+        `;
+    });
 
-        html += "</div>";
-        resultsDiv.innerHTML = html;
-    }
+    html += `</div>`;
 
-    function escapeHtml(text) {
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-    }
+    results.innerHTML = html;
 }
 
-// === CORRECTION TURBO / DOMCONTENTLOADED ===
-// Empêche l'oubli d'initialisation sur certaines pages
-function fullInit() {
-    initSearch();
-}
 
-document.addEventListener("DOMContentLoaded", fullInit);
-document.addEventListener("turbo:load", fullInit);
-document.addEventListener("turbo:render", fullInit);
+/* ============================================================================
+   🟠 PARTIE 2 — Recherche TMDB ADMIN (déjà fonctionnel)
+   ============================================================================ */
 
-// ============================================================================
-// 🎬 PARTIE 2 — Recherche TMDB dans admin/seance/new
-// ============================================================================
-document.addEventListener("turbo:load", () => {
+function initAdminSearch() {
     const input = document.querySelector("#tmdb_search");
     const resultsBox = document.querySelector("#tmdb_results");
-    const hiddenTmdbId = document.querySelector("#seance_tmdb_id");
+    const hiddenId = document.querySelector("#seance_tmdb_id");
 
-    if (!input || !resultsBox) return;
+    if (!input || !resultsBox || !hiddenId) {
+        return; // on n'est pas sur admin/seance/new
+    }
+
+    console.log("🟠 Recherche TMDB ADMIN ACTIVÉE");
 
     let timer = null;
 
@@ -146,64 +104,62 @@ document.addEventListener("turbo:load", () => {
         clearTimeout(timer);
 
         if (query.length < 2) {
-            resultsBox.innerHTML = "";
             resultsBox.style.display = "none";
+            resultsBox.innerHTML = "";
             return;
         }
 
         timer = setTimeout(() => {
             fetch(`/api/tmdb/search?query=${encodeURIComponent(query)}`)
-                .then((res) => res.json())
-                .then((data) => {
-                    resultsBox.innerHTML = "";
-
-                    if (!data.length) {
-                        resultsBox.style.display = "none";
-                        return;
-                    }
-
-                    data.forEach((movie) => {
-                        const item = document.createElement("div");
-                        item.classList.add("tmdb-item");
-
-                        const poster = movie.poster_path
-                            ? `https://image.tmdb.org/t/p/w92${movie.poster_path}`
-                            : "https://via.placeholder.com/92x138?text=No+Image";
-
-                        const year =
-                            movie.release_date?.substring(0, 4) ||
-                            movie.year ||
-                            "";
-
-                        item.innerHTML = `
-                            <img src="${poster}" alt="">
-                            <div>
-                                <strong>${movie.title}</strong><br>
-                                <small>${year}</small>
-                            </div>
-                        `;
-
-                        item.addEventListener("click", () => {
-                            input.value = movie.title;
-                            hiddenTmdbId.value = movie.id;
-
-                            document.getElementById("film_titre").value =
-                                movie.title;
-                            document.getElementById("film_annee").value =
-                                movie.release_date?.substring(0, 4) || "";
-                            document.getElementById("film_poster").value =
-                                movie.poster_path || "";
-                            document.getElementById("film_synopsis").value =
-                                movie.overview || "";
-
-                            resultsBox.style.display = "none";
-                        });
-
-                        resultsBox.appendChild(item);
-                    });
-
-                    resultsBox.style.display = "block";
-                });
+                .then((response) => response.json())
+                .then((movies) =>
+                    showAdminResults(movies, input, hiddenId, resultsBox)
+                )
+                .catch((err) => console.error("Erreur ADMIN TMDB :", err));
         }, 300);
     });
-});
+}
+
+function showAdminResults(movies, input, hiddenId, box) {
+    box.innerHTML = "";
+
+    if (!movies || movies.length === 0) {
+        box.style.display = "none";
+        return;
+    }
+
+    movies.forEach((movie) => {
+        const div = document.createElement("div");
+        div.classList.add("tmdb-item");
+
+        div.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w92${movie.poster_path}">
+            <div>
+                <strong>${movie.title}</strong><br>
+                <small>${movie.release_date?.substring(0, 4) || ""}</small>
+            </div>
+        `;
+
+        div.addEventListener("click", () => {
+            input.value = movie.title;
+            hiddenId.value = movie.id;
+            box.style.display = "none";
+        });
+
+        box.appendChild(div);
+    });
+
+    box.style.display = "block";
+}
+
+/* ============================================================================
+   🚀 INITIALISATION GLOBALE
+   ============================================================================ */
+
+function initAll() {
+    initPublicSearch();
+    initAdminSearch();
+}
+
+document.addEventListener("DOMContentLoaded", initAll);
+document.addEventListener("turbo:load", initAll);

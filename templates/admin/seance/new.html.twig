@@ -431,7 +431,7 @@
 {% endblock %}
 
 {% block body %}
-<div class="seance-page">
+<div class="seance-page" data-turbo="false">
     <div class="container">
         
         <!-- Header -->
@@ -442,7 +442,7 @@
 
         <!-- Card Formulaire -->
         <div class="seance-card">
-            {{ form_start(form, {'attr': {'class': 'seance-form'}}) }}
+            {{ form_start(form, {'attr': {'class': 'seance-form','data-turbo': 'false', 'data-turbo-stream': 'false'}}) }}
 
             <!-- Section: Recherche Film -->
             <div class="form-section">
@@ -465,6 +465,9 @@
                         >
                     </div>
                     <div id="tmdb_results"></div>
+                    <input type="hidden" id="seance_film_id" name="seance[film]" />
+                   
+
 
                     <!-- Film sélectionné -->
                     <div id="selected_movie" class="selected-movie">
@@ -479,7 +482,7 @@
                 </div>
 
                 <!-- Champ caché TMDB ID -->
-                {{ form_widget(form.tmdb_id, {'id': 'seance_tmdb_id'}) }}
+                {{ form_widget(form.tmdb_id, {'attr': {'id': 'seance_tmdb_id'}}) }}
             </div>
 
             <!-- Section: Date & Heure -->

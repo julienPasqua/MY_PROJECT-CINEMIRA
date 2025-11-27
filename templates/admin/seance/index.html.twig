@@ -180,6 +180,66 @@
         gap: 1rem;
         margin-bottom: 1rem;
     }
+@media (max-width: 768px) {
+
+    .content-card {
+        padding: 1.25rem;
+    }
+
+    .header-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .header-actions a {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Table en mode "cartes" */
+    .table-custom thead {
+        display: none;
+    }
+
+    .table-custom,
+    .table-custom tbody,
+    .table-custom tr,
+    .table-custom td {
+        display: block;
+        width: 100%;
+    }
+
+    .table-custom tr {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        background: #fff;
+    }
+
+    .table-custom td {
+        padding: 0.35rem 0;
+        border-bottom: none;
+    }
+
+    .film-info {
+        align-items: flex-start;
+    }
+
+    .badge-id {
+        display: inline-block;
+        margin-bottom: 0.4rem;
+    }
+
+    .badge-salle {
+        margin-top: 0.35rem;
+    }
+
+    .btn-action {
+        margin-top: 0.4rem;
+    }
+}
+
 </style>
 {% endblock %}
 

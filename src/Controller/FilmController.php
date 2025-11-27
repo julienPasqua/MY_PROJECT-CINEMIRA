@@ -14,9 +14,6 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class FilmController extends AbstractController
 {
-    /**
-     * Affiche la liste de tous les films
-     */
     #[Route('/films', name: 'app_films_index')]
     public function index(FilmRepository $filmRepo): Response
     {
@@ -27,9 +24,6 @@ class FilmController extends AbstractController
         ]);
     }
 
-    /**
-     * Affiche les détails d'un film EN BDD (id local)
-     */
     #[Route('/film/{id}', name: 'app_film_show', requirements: ['id' => '\d+'])]
     public function show(
         int $id,
@@ -50,13 +44,10 @@ class FilmController extends AbstractController
             'film' => $film,
             'avis' => $avis,
             'ratingDistribution' => $ratingDistribution,
-            'tmdbId' => $film->getTmdbId(), // peut servir ailleurs si besoin
+            'tmdbId' => $film->getTmdbId(),
         ]);
     }
 
-    /**
-     * Affiche un film par TMDB (si pas en BDD)
-     */
     #[Route('/film/tmdb/{tmdbId}', name: 'app_film_show_tmdb', requirements: ['tmdbId' => '\d+'])]
     public function showByTmdbId(
         int $tmdbId,
@@ -64,23 +55,21 @@ class FilmController extends AbstractController
         TmdbService $tmdbService
     ): Response {
 
-        // 1️⃣ Si déjà en BDD → on redirige vers la route normale
         $filmEntity = $filmRepo->findByTmdbId($tmdbId);
 
+        // Si déjà en BDD, redirection propre
         if ($filmEntity) {
             return $this->redirectToRoute('app_film_show', [
                 'id' => $filmEntity->getId(),
             ]);
         }
 
-        // 2️⃣ Sinon, on va chercher dans TMDB
         $movieData = $tmdbService->getMovieDetails($tmdbId);
 
         if (!$movieData) {
-            throw $this->createNotFoundException('Film introuvable sur TheMovieDB.');
+            throw $this->createNotFoundException('Film introuvable sur TMDB.');
         }
 
-        // 3️⃣ On NORMALISE les données pour le Twig
         $film = [
             'tmdbId'      => $movieData['id'],
             'titre'       => $movieData['title'],
@@ -95,39 +84,44 @@ class FilmController extends AbstractController
 
         return $this->render('film/show.html.twig', [
             'film' => $film,
-            // pas d'avis pour la version TMDB brute
             'avis' => [],
             'ratingDistribution' => [],
+            'tmdbId' => $tmdbId,
         ]);
     }
 
     /**
-     * Recherche
+     * 🔵 Recherche PUBLIC (Navbar) — JSON
+     * Route utilisée par ton JS dans la navbar
      */
-    #[Route('/films/search', name: 'app_films_search')]
-    public function search(
-        FilmRepository $filmRepo,
-        TmdbService $tmdbService
-    ): Response {
-        $query = $_GET['q'] ?? '';
+    #[Route('/api/tmdb/search', name: 'api_tmdb_search')]
+    public function apiSearch(Request $request, TmdbService $tmdbService): JsonResponse
+    {
+        $query = $request->query->get('query', '');
 
-        if (!$query) {
-            return $this->redirectToRoute('app_films_index');
+        if (strlen($query) < 2) {
+            return $this->json([]);
         }
 
-        $filmsLocal = $filmRepo->searchByTitre($query);
-        $filmsTmdb  = $tmdbService->searchMovies($query);
-
-        return $this->render('film/search.html.twig', [
-            'query'      => $query,
-            'filmsLocal' => $filmsLocal,
-            'filmsTmdb'  => $filmsTmdb,
-        ]);
+        return $this->json($tmdbService->searchMovies($query));
     }
 
     /**
-     * Films par genre
+     * 🟠 Recherche ADMIN TMDB — JSON
+     * Utilisée dans admin/séance/new
      */
+    #[Route('/search/admin', name: 'film_search_admin')]
+    public function searchAdmin(Request $request, TmdbService $tmdbService): JsonResponse
+    {
+        $query = $request->query->get('q', '');
+
+        if (strlen($query) < 2) {
+            return $this->json([]);
+        }
+
+        return $this->json($tmdbService->searchMovies($query));
+    }
+
     #[Route('/films/genre/{id}', name: 'app_films_by_genre')]
     public function byGenre(int $id, GenreRepository $genreRepo, FilmRepository $filmRepo): Response
     {
@@ -144,29 +138,4 @@ class FilmController extends AbstractController
             'films' => $films,
         ]);
     }
-
-    #[Route('/api/tmdb/search', name: 'api_tmdb_search')]
-    public function apiSearch(Request $request, TmdbService $tmdbService): JsonResponse
-    {
-        $query = $request->query->get('query', '');
-
-        if (strlen($query) < 2) {
-        return $this->json([]);
-        }
-
-        $results = $tmdbService->searchMovies($query);
-
-        $formatted = array_map(function ($movie) {
-        return [
-            'id'           => $movie['id'] ?? null,
-            'title'        => $movie['title'] ?? '',
-            'overview'     => $movie['overview'] ?? '',
-            'poster_path'  => $movie['poster_path'] ?? null,
-            'release_date' => $movie['release_date'] ?? null,
-        ];
-        }, $results ?? []);
-
-        return $this->json($formatted);
-    }
-
 }

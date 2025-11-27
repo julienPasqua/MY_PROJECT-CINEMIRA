@@ -1,27 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} - CineMira{% endblock %}
+{% block title %}{{ film.titre }} - CineMira{% endblock %}
 
 {% block body %}
 
 <div class="container mt-4">
 
     {# ==========================
-       HEADER AVEC BACKDROP + POSTER
+       HEADER BACKDROP
        ========================== #}
+
+    {% set backdrop = film.backdropUrl ? 'https://image.tmdb.org/t/p/original' ~ film.backdropUrl : asset('images/no-backdrop.jpg') %}
+    {% set poster   = film.posterUrl   ? 'https://image.tmdb.org/t/p/w300'    ~ film.posterUrl   : asset('images/no-poster.png') %}
+
     <div class="position-relative mb-5">
-        <div class="rounded shadow" 
-             style="
-                background-image: url('https://image.tmdb.org/t/p/original{{ film.backdropUrl }}');
+        <div class="rounded shadow"
+            style="
+                background-image: url('{{ backdrop }}');
                 background-size: cover;
                 background-position: center;
                 height: 380px;
-             ">
+            ">
         </div>
 
         <div class="position-absolute" style="bottom: -60px; left: 40px;">
-            <img src="https://image.tmdb.org/t/p/w300{{ film.posterUrl }}" 
-                 alt="{{ film.titre }}" 
+            <img src="{{ poster }}"
+                 alt="{{ film.titre }}"
                  class="rounded shadow-lg"
                  style="width: 180px;">
         </div>
@@ -30,12 +34,12 @@
     <div class="mt-5">
 
         {# ==========================
-           TITRE + ANNÉE + BOUTON
+           TITRE ET ACTION
            ========================== #}
+
         <div class="d-flex justify-content-between align-items-center mb-4">
-            
             <div>
-                {# <h1 class="fw-bold">{{ film.titre }}</h1> #}
+                <h1 class="fw-bold">{{ film.titre }}</h1>
 
                 {% if film.dateSortie %}
                     <span class="badge bg-dark">
@@ -44,8 +48,7 @@
                 {% endif %}
             </div>
 
-            {# ⭐ Bouton vers choix cinéma #}
-            <a href="{{ path('app_reservation_cinema', { tmdbId: tmdbId }) }}" 
+            <a href="{{ path('app_reservation_cinema', { tmdbId: film.tmdbId }) }}"
                class="btn btn-danger btn-lg px-4 py-2"
                style="border-radius: 12px; font-weight: 600;">
                🎟️ Voir les séances / Choisir mon cinéma
@@ -55,10 +58,10 @@
         <hr>
 
         {# ==========================
-           SYNOPSIS + INFORMATIONS
+           SYNOPSIS
            ========================== #}
+
         <div class="row mt-4">
-            
             <div class="col-md-8">
                 <h3 class="mb-3">📖 Synopsis</h3>
                 <p style="font-size: 1.1rem;">
@@ -70,28 +73,31 @@
                 <h3 class="mb-3">ℹ️ Informations</h3>
                 <ul class="list-unstyled fs-6">
 
-                    <li><strong>Ajouté le :</strong> {{ film.dateSortie|date('Y') }}</li>
+                    <li><strong>Année :</strong>
+                        {{ film.dateSortie ? film.dateSortie|date('Y') : '—' }}
+                    </li>
+
                     <li><strong>TMDB ID :</strong> {{ film.tmdbId }}</li>
 
-                    {% if film.genres|length > 0 %}
+                    {% if film.genres is defined and film.genres|length > 0 %}
                         <li>
-                            <strong>Genres :</strong> 
-                            {{ film.genres|map(g => g.nom)|join(', ') }}
+                            <strong>Genres :</strong>
+                            {{ film.genres|map(g => g.nom ?? g.name)|join(', ') }}
                         </li>
                     {% endif %}
                 </ul>
             </div>
-
         </div>
 
         <hr>
 
         {# ==========================
-           AVIS DES UTILISATEURS
+           AVIS UTILISATEURS
            ========================== #}
+
         <h3 class="mt-5 mb-3">⭐ Avis des spectateurs</h3>
 
-        {% if avis is empty %}
+        {% if avis is not defined or avis is empty %}
             <p>Aucun avis pour le moment.</p>
         {% else %}
             <div class="list-group mb-4">
