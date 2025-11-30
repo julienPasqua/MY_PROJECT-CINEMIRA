@@ -93,4 +93,18 @@ class ReservationRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+        /**
+     * Retourne tous les sièges déjà réservés pour une séance
+     */
+    public function findSiegesReservesPourSeance(int $seanceId): array
+    {
+        return $this->createQueryBuilder('r')
+            ->join('r.sieges', 's')
+            ->where('r.seance = :id')
+            ->setParameter('id', $seanceId)
+            ->select('s')
+            ->getQuery()
+            ->getResult();
+    }
+
 }

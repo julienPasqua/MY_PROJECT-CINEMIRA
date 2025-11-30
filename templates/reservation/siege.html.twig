@@ -174,11 +174,15 @@
     </div>
 
 
-    <form data-turbo="false" method="POST" action="{{ path('app_reservation_recap') }}" id="seats-form">
+    <form data-turbo="false"
+        method="POST"
+        action="{{ path('app_reservation_recap') }}"
+        id="seats-form">
         <input type="hidden" name="seanceId" value="{{ seance.id }}">
         <input type="hidden" name="sieges" id="sieges-input">
         <button type="submit" class="continue-btn">Continuer →</button>
     </form>
+
 
 </div>
 
@@ -209,4 +213,18 @@
         });
     });
 </script>
+    {# 🔥 AJOUTE CE SCRIPT ICI #}
+    <script>
+    document.getElementById('seats-form').addEventListener('submit', (e) => {
+        const value = document.getElementById('sieges-input').value;
+
+        if (!value.trim()) {
+            e.preventDefault();
+            alert("⚠️ Veuillez choisir au moins un siège.");
+            return false;
+        }
+
+        console.log("Valeur envoyée :", value);
+    });
+    </script>
 {% endblock %}

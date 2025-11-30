@@ -6,16 +6,19 @@ use App\Form\ContactType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ContactController extends AbstractController
 {
     #[Route('/contact', name: 'contact_page')]
     public function index(Request $request, MailerInterface $mailer): Response
     {
-        $form = $this->createForm(ContactType::class);
+        $form = $this->createForm(ContactType::class, null, [
+            'method' => 'POST',
+        ]);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -24,12 +27,11 @@ class ContactController extends AbstractController
 
             $email = (new Email())
                 ->from('julienpasqua2a@gmail.com')
+                ->to('julienpasqua2a@gmail.com')
                 ->replyTo($data['email'])
-                ->to('julienpasqua2a@gmail.com')                                                     
-                ->subject('📩 Nouveau message du formulaire de contact')
-                ->text($data['message'])
+                ->subject("📩 Nouveau message CineMira")
                 ->html("
-                    <h2>Nouveau message de contact</h2>
+                    <h2>📬 Nouveau message du formulaire</h2>
                     <p><strong>Nom :</strong> {$data['nom']}</p>
                     <p><strong>Email :</strong> {$data['email']}</p>
                     <p><strong>Message :</strong><br>{$data['message']}</p>
@@ -37,7 +39,7 @@ class ContactController extends AbstractController
 
             $mailer->send($email);
 
-            $this->addFlash('success', 'Votre message a bien été envoyé ✔️');
+            $this->addFlash('success', 'Votre message a été envoyé avec succès ✔️');
 
             return $this->redirectToRoute('contact_page');
         }

@@ -63,79 +63,73 @@
 {% endblock %}
 
 {% block body %}
-<div class="container mt-5" style="max-width: 750px;">
+<div class="container mt-5" style="max-width: 750px; color:white;">
 
     <h1 class="text-center mb-4" style="font-weight:900; color:#ffd700;">
-        🎟️ Récapitulatif de votre réservation
+        🎟️ Paiement & Confirmation
     </h1>
 
     <div class="recap-card">
 
-        <p><span class="label">🎞 Film :</span>
-            <span class="value">{{ film.titre }}</span>
+        <h3 class="mb-3" style="color:#ffd700;">Votre réservation</h3>
+
+        <p><strong>🎞 Film :</strong> {{ film.titre }}</p>
+
+        <p><strong>🎦 Cinéma :</strong> {{ cinema.nom }}</p>
+
+        <p><strong>🕒 Séance :</strong>
+            {{ seance.dateSeance|date('d/m/Y') }} — {{ seance.heureDebut|date('H:i') }}
         </p>
 
-        <p><span class="label">🎦 Cinéma :</span>
-            <span class="value">{{ cinema.nom }}</span>
+        <p><strong>💺 Sièges :</strong><br>
+            {% for s in siegesChoisis %}
+                🔸 Rangée {{ s.numeroRangee }} / Place {{ s.numeroPlace }}<br>
+            {% endfor %}
         </p>
 
-        <p><span class="label">🕒 Séance :</span>
-            <span class="value">
-                {{ seance.dateSeance|date('d/m/Y') }} à {{ seance.heureDebut|date('H:i') }}
-                — {{ seance.format }} / {{ seance.version }}
-            </span>
+        <p><strong>💰 Total :</strong>
+            <span style="font-size:1.4rem;">{{ total }} €</span>
         </p>
 
-        <p><span class="label">💺 Sièges sélectionnés :</span><br>
-            <span class="value">
-                {% for s in siegesChoisis %}
-                    🔸 Rangée {{ s.numeroRangee }} — Place {{ s.numeroPlace }} <br>
-                {% endfor %}
-            </span>
-        </p>
-
-        <hr>
-
-        <p><span class="label">💰 Total :</span>
-            <span class="value" style="font-size:1.5rem;">
-                {{ total }} €
-            </span>
-        </p>
-
-        <form  id="checkout-form" action="{{ path('app_payment_create') }}" method="POST">
+        <form id="checkout-form" action="{{ path('app_payment_create') }}" method="POST" data-turbo="false">
             <input type="hidden" name="seanceId" value="{{ seance.id }}">
             <input type="hidden" name="sieges" value="{{ siegesIds|join(',') }}">
 
-            <button class="btn-confirm mt-4" type="submit">
-                💳 Procéder au paiement de {{ total }} €
+            <button class="btn-confirm" type="submit">
+                💳 Payer maintenant ({{ total }} €)
             </button>
         </form>
 
-        <script src="https://js.stripe.com/v3/"></script>
+    </div>   {# <-- LA DIV QUI MANQUAIT ! #}
 
-        <script>
-        document.getElementById("checkout-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
+    <script src="https://js.stripe.com/v3/"></script>
 
-            const form = e.target;
-            const data = new FormData(form);
+    <script>
+    document.getElementById("checkout-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-            const response = await fetch(form.action, {
-                method: "POST",
-                body: data
-            });
+        const form = e.target;
+        const data = new FormData(form);
 
-            const session = await response.json();
-
-            if (!session.id) {
-                alert("Erreur avec Stripe");
-                console.error(session);
-                return;
-            }
-
-            const stripe = Stripe("{{ stripePublicKey }}");
-            stripe.redirectToCheckout({ sessionId: session.id });
+        const response = await fetch(form.action, {
+            method: "POST",
+            body: data
         });
-     </script>
 
+        const session = await response.json();
+
+        if (!session.id) {
+            alert("Erreur Stripe");
+            console.error(session);
+            return;
+        }
+
+        const stripe = Stripe("{{ stripePublicKey }}");
+        stripe.redirectToCheckout({ sessionId: session.id });
+    });
+    </script>
+
+
+
+</div>
 {% endblock %}

@@ -4,7 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Cinema;
 use App\Entity\Seance;
-use App\Entity\Siege;
+use APP\Entity\Siege;
+use App\Entity\Reservation;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -67,8 +68,9 @@ class UserSeanceController extends AbstractController
         ]);
     }
 
-    /**
-     * 🎬 Étape 3 — Choisir les sièges (MANQUAIT !)
+
+        /**
+     * 🎬 Étape 3 — Choisir les sièges
      */
     #[Route('/siege/{seanceId}', name: 'app_reservation_siege')]
     public function siege(int $seanceId, EntityManagerInterface $em): Response
@@ -79,20 +81,24 @@ class UserSeanceController extends AbstractController
             throw $this->createNotFoundException("Séance introuvable.");
         }
 
+        // Tous les sièges de la salle
         $sieges = $em->getRepository(Siege::class)->findBy(
             ['salle' => $seance->getSalle()],
             ['numero_rangee' => 'ASC', 'numero_place' => 'ASC']
         );
 
-        // Sièges déjà réservés
-        $siegesReserves = $em->createQueryBuilder()
+        // 🟦 Sièges déjà réservés (FIX : part de Reservation, pas de Siege)
+        $reserved = $em->createQueryBuilder()
             ->select('s.id')
-            ->from(Siege::class, 's')
-            ->join('s.reservations', 'r')
+            ->from(Reservation::class, 'r')
+            ->join('r.sieges', 's')
             ->where('r.seance = :seance')
             ->setParameter('seance', $seance)
             ->getQuery()
-            ->getSingleColumnResult();
+            ->getScalarResult();
+
+        // transforme [{id: 3}, {id: 5}] → [3, 5]
+        $siegesReserves = array_column($reserved, 'id');
 
         return $this->render('reservation/siege.html.twig', [
             'seance' => $seance,
@@ -100,4 +106,5 @@ class UserSeanceController extends AbstractController
             'siegesReserves' => $siegesReserves,
         ]);
     }
+
 }

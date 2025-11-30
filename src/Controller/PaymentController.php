@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Service\PdfService;
 
 class PaymentController extends AbstractController
 {
@@ -23,8 +24,10 @@ class PaymentController extends AbstractController
     {
         Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
 
-        $seanceId = $request->get('seanceId');
-        $siegesIds = explode(',', $request->get('sieges'));
+        $seanceId  = $request->request->get('seanceId');
+        $siegesRaw = $request->request->get('sieges');
+
+        $siegesIds = array_filter(explode(',', $siegesRaw));
 
         $seance = $em->getRepository(Seance::class)->find($seanceId);
         $sieges = $em->getRepository(Siege::class)->findBy(['id' => $siegesIds]);
@@ -33,23 +36,11 @@ class PaymentController extends AbstractController
             return new JsonResponse(['error' => 'Invalid data'], 400);
         }
 
-        // 1️⃣ — Réservation PENDING avant paiement
-        $reservation = new Reservation();
-        $reservation->setUtilisateur($this->getUser());
-        $reservation->setSeance($seance);
-        $reservation->setDateReservation(new \DateTime());
-        $reservation->setStatut(ReservationStatus::PENDING);
-        $reservation->setPrixTotal(count($sieges) * $seance->getPrixBase());
-        $reservation->setNombresPlaces(count($sieges));
+        // On stocke temporairement les infos dans la SESSION
+        $sessionSymfony = $request->getSession();
+        $sessionSymfony->set('seanceId', $seanceId);
+        $sessionSymfony->set('siegesIds', $siegesIds);
 
-        foreach ($sieges as $siege) {
-            $reservation->addSiege($siege);
-        }
-
-        $em->persist($reservation);
-        $em->flush();
-
-        // 2️⃣ — Session Stripe
         $session = Session::create([
             'payment_method_types' => ['card'],
 
@@ -57,7 +48,7 @@ class PaymentController extends AbstractController
                 'price_data' => [
                     'currency' => 'eur',
                     'product_data' => [
-                        'name' => "Réservation pour " . $seance->getFilm()->getTitre(),
+                        'name' => "Réservation : " . $seance->getFilm()->getTitre(),
                     ],
                     'unit_amount' => $seance->getPrixBase() * 100,
                 ],
@@ -66,15 +57,15 @@ class PaymentController extends AbstractController
 
             'mode' => 'payment',
 
-            // 🔥 3️⃣ — URLs ABSOLUES, PROPRES, FONCTIONNELLES
             'success_url' => $this->generateUrl(
-                'app_payment_success_temp',
+                'app_reservation_confirmer_from_stripe',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
             ),
 
+
             'cancel_url' => $this->generateUrl(
-                'app_payment_cancel_temp',
+                'home.index',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
             ),
@@ -83,15 +74,56 @@ class PaymentController extends AbstractController
         return new JsonResponse(['id' => $session->id]);
     }
 
-    #[Route('/reservation/success-temp', name: 'app_payment_success_temp')]
-    public function tmpSuccess(): Response
-    {
-        return new Response("<h1>Paiement OK ✔️</h1>");
-    }
 
-    #[Route('/reservation/cancel-temp', name: 'app_payment_cancel_temp')]
-    public function tmpCancel(): Response
-    {
-        return new Response("<h1>Paiement annulé ❌</h1>");
+    #[Route('/paiement/success', name: 'app_payment_success', methods: ['GET'])]
+    public function success(
+        Request $request,
+        EntityManagerInterface $em,
+        PdfService $pdfService
+    ): Response {
+
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $session = $request->getSession();
+        $seanceId = $session->get('seanceId');
+        $siegesIds = $session->get('siegesIds');
+
+        if (!$seanceId || empty($siegesIds)) {
+            throw $this->createNotFoundException("Session Stripe vide.");
+        }
+
+        $seance = $em->getRepository(Seance::class)->find($seanceId);
+        $sieges = $em->getRepository(Siege::class)->findBy(['id' => $siegesIds]);
+
+        // Création de la réservation
+        $reservation = new Reservation();
+        $reservation->setUtilisateur($this->getUser());
+        $reservation->setSeance($seance);
+        $reservation->setDateReservation(new \DateTime());
+        $reservation->setStatut(ReservationStatus::CONFIRMEE);
+        $reservation->setPrixTotal(count($sieges) * $seance->getPrixBase());
+        $reservation->setNombresPlaces(count($sieges));
+        $reservation->setCodeConfirmation(uniqid('RESA-'));
+
+        foreach ($sieges as $siege) {
+            $reservation->addSiege($siege);
+        }
+
+        $em->persist($reservation);
+        $em->flush();
+
+        // Génération du PDF
+        $html = $this->renderView('reservation/ticket.html.twig', [
+            'reservation' => $reservation
+        ]);
+        $pdfService->generatePdf($html, 'ticket_' . $reservation->getId() . '.pdf');
+
+        // Nettoyage session Stripe
+        $session->remove('seanceId');
+        $session->remove('siegesIds');
+
+        return $this->redirectToRoute('app_reservation_success', [
+            'id' => $reservation->getId()
+        ]);
     }
 }

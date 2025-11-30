@@ -104,8 +104,8 @@
         💰 Total payé : <strong>{{ reservation.prixTotal }} €</strong>
     </p>
 
-    <a href="{{ asset('pdf/ticket_' ~ reservation.id ~ '.pdf') }}" 
-       class="btn-ticket" download>
+    <a href="{{ '/tickets/ticket_' ~ reservation.id ~ '.pdf' }}" 
+        class="btn-ticket" target="_blank">
         📥 Télécharger mon ticket PDF
     </a>
 
@@ -114,4 +114,8 @@
     <a href="{{ path('home.index') }}" class="btn-home">← Retour à l'accueil</a>
 
 </div>
+    <script>
+    // Ouvre le PDF dans un autre onglet sans quitter la page
+   window.open("/tickets/ticket_{{ reservation.id }}.pdf", "_blank");
+</script>
 {% endblock %}

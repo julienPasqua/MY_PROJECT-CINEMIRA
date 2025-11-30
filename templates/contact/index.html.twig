@@ -97,6 +97,11 @@
 {% endblock %}
 
 {% block body %}
+{% set show_Search_Bar = false %}
+
+<div data-turbo="false">
+
+
 <div class="contact-card">
 
     <h1>📩 Contactez-nous</h1>
@@ -108,27 +113,28 @@
     </div>
     {% endfor %}
 
+    {{ form_start(form, { attr: { 'data-turbo': 'false' } }) }}
 
-    {{ form_start(form) }}
+    <div class="mb-3">
+        {{ form_label(form.nom) }}
+        {{ form_widget(form.nom, {'attr': {'class':'form-control'}}) }}
+    </div>
 
-        <div class="mb-3">
-            {{ form_label(form.nom) }}
-            {{ form_widget(form.nom, {'attr': {'class':'form-control'}}) }}
-        </div>
+    <div class="mb-3">
+        {{ form_label(form.email) }}
+        {{ form_widget(form.email, {'attr': {'class':'form-control'}}) }}
+    </div>
 
-        <div class="mb-3">
-            {{ form_label(form.email) }}
-            {{ form_widget(form.email, {'attr': {'class':'form-control'}}) }}
-        </div>
+    <div class="mb-3">
+        {{ form_label(form.message) }}
+        {{ form_widget(form.message, {'attr': {'class':'form-control', 'rows': 6}}) }}
+    </div>
 
-        <div class="mb-3">
-            {{ form_label(form.message) }}
-            {{ form_widget(form.message, {'attr': {'class':'form-control','rows':6}}) }}
-        </div>
-
-        <button class="btn-submit">Envoyer le message</button>
+    <button type="submit" class="btn-submit">Envoyer</button>
 
     {{ form_end(form) }}
+
+
 
 </div>
 <script>
@@ -148,4 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+
 {% endblock %}
+
+
